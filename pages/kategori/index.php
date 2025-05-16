@@ -26,6 +26,7 @@
 </head>
 
 <body>
+  <?php include('../../koneksi.php')?>
   <div class="container-scroller">
 
     <!-- header -->
@@ -36,8 +37,6 @@
       <!-- navbar -->
       <?php include('../../navbar.php'); ?>
       <!-- tutup navbar -->
-
-
       <!-- partial -->
       <div class="main-panel">
         <div class="content-wrapper">
@@ -54,57 +53,50 @@
             <div class="col-lg-12 grid-margin stretch-card">
               <div class="card">
                 <div class="card-body">
+                  <div class="row">
+                  <div class="col-lg-8">
                   <h4 class="card-title">Data Kategori</h4>
                   <p class="card-description"> Tabel Kategori menampilkan daftar kategori yang tersedia beserta informasi terkait untuk memudahkan pengelompokan data atau produk.
                   </p>
+                  </div>
+                  <div class="col-lg-4" style="float:right;">
+                  <button class="btn btn-gradient-primary btn-rounded btn-fw" type="button" data-toggle="modal" data-target="#exampleModalScrollable"><i class="fa fa-plus"></i>  Tambah Kategori</button>
+                  </div>
+                  </div>
                   <table class="table table-striped" id="striped-table">
                     <thead>
                       <tr>
-                        <th>Profile</th>
-                        <th>VatNo.</th>
-                        <th>Created</th>
+                        <th>No.</th>
+                        <th>Nama Kategori.</th>
                         <th>Status</th>
+                        <th>Aksi</th>
                       </tr>
                     </thead>
                     <tbody>
-                      <tr>
-                        <td>Jacob</td>
-                        <td>53275531</td>
-                        <td>12 May 2017</td>
-                        <td><label class="badge badge-danger">Pending</label></td>
-                      </tr>
-                      <tr>
-                        <td>Messsy</td>
-                        <td>53275532</td>
-                        <td>15 May 2017</td>
-                        <td><label class="badge badge-warning">In progress</label></td>
-                      </tr>
-                      <tr>
-                        <td>John</td>
-                        <td>53275533</td>
-                        <td>14 May 2017</td>
-                        <td><label class="badge badge-info">Fixed</label></td>
-                      </tr>
-                      <tr>
-                        <td>Peter</td>
-                        <td>53275534</td>
-                        <td>16 May 2017</td>
-                        <td><label class="badge badge-success">Completed</label></td>
-                      </tr>
-                      <tr>
-                        <td>Dave</td>
-                        <td>53275535</td>
-                        <td>20 May 2017</td>
-                        <td><label class="badge badge-warning">In progress</label></td>
-                      </tr>
+                      <?php
+                        $result = mysqli_query($mysqli, "SELECT * FROM kategori");
+                        $no = 1;
+                       while($kategori = mysqli_fetch_array($result)) {         
+                          echo "<tr>";
+                          echo "<td>".$no++."</td>";
+                          echo "<td>".$kategori['Nama_Kategori']."</td>";
+                          echo "<td>".$kategori['Status']."</td>";
+                          echo "<td><button class='btn btn-xs btn-outline-primary btn-fw'><i class='fa fa-edit'></i> Edit</button>
+                                    <button class='btn btn-xs btn-outline-danger btn-fw'><i class='fa fa-edit'></i> Hapus</button>
+                                </td>"; 
+                          echo "</tr>";
+                      }
+                        ?>
                     </tbody>
                   </table>
                 </div>
               </div>
             </div>
-
           </div>
         </div>
+
+     
+
         <!-- content-wrapper ends -->
         <!-- partial:../../partials/_footer.html -->
         <footer class="footer">
