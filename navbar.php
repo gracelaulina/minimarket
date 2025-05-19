@@ -29,7 +29,16 @@
                 <ul class="nav flex-column sub-menu">
                     <li class="nav-item">
                         <?php
-                        $base_url = (isset($_SERVER['HTTPS']) ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'] . "/";
+                        $host = $_SERVER['HTTP_HOST'];
+                        $protocol = isset($_SERVER['HTTPS']) ? "https" : "http";
+
+                        // Cek apakah dia dari XAMPP (localhost)
+                        if ($host === "localhost") {
+                            $base_url = $protocol . "://" . $host . "/minimarket/";
+                        } else {
+                            // Diasumsikan Laragon atau hosting lain
+                            $base_url = $protocol . "://" . $host . "/";
+                        }
                         ?>
                         <a class="nav-link" href="<?= $base_url ?>pages/kategori/index.php">Katagori</a>
                     </li>
