@@ -3,7 +3,10 @@
         <li class="nav-item nav-profile">
             <a href="#" class="nav-link">
                 <div class="nav-profile-image">
-                    <img src="../../assets/images/faces/face1.jpg" alt="profile" />
+                    <?php
+                    include('base_url.php');
+                    ?>
+                    <img src="<?= $base_url ?>assets/images/faces/face1.jpg" alt="profile" />
                     <span class="login-status online"></span>
                 </div>
                 <div class="nav-profile-text d-flex flex-column">
@@ -14,7 +17,7 @@
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="../../index.php">
+            <a class="nav-link" href="<?= $base_url ?>index.php">
                 <span class="menu-title">Dashboard</span>
                 <i class="mdi mdi-home menu-icon"></i>
             </a>
@@ -28,18 +31,6 @@
             <div class="collapse" id="masterdata">
                 <ul class="nav flex-column sub-menu">
                     <li class="nav-item">
-                        <?php
-                        $host = $_SERVER['HTTP_HOST'];
-                        $protocol = isset($_SERVER['HTTPS']) ? "https" : "http";
-
-                        // Cek apakah dia dari XAMPP (localhost)
-                        if ($host === "localhost") {
-                            $base_url = $protocol . "://" . $host . "/minimarket/";
-                        } else {
-                            // Diasumsikan Laragon atau hosting lain
-                            $base_url = $protocol . "://" . $host . "/";
-                        }
-                        ?>
                         <a class="nav-link" href="<?= $base_url ?>pages/kategori/index.php">Katagori</a>
                     </li>
                     <li class="nav-item">
