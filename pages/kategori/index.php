@@ -26,7 +26,7 @@
 </head>
 
 <body>
-  <?php include('../../koneksi.php')?>
+  <?php include('../../koneksi.php') ?>
   <div class="container-scroller">
 
     <!-- header -->
@@ -54,14 +54,14 @@
               <div class="card">
                 <div class="card-body">
                   <div class="row">
-                  <div class="col-lg-8">
-                  <h4 class="card-title">Data Kategori</h4>
-                  <p class="card-description"> Tabel Kategori menampilkan daftar kategori yang tersedia beserta informasi terkait untuk memudahkan pengelompokan data atau produk.
-                  </p>
-                  </div>
-                  <div class="col-lg-4" style="float:right;">
-                  <button class="btn btn-gradient-primary btn-rounded btn-fw" type="button" data-toggle="modal" data-target="#exampleModalScrollable"><i class="fa fa-plus"></i>  Tambah Kategori</button>
-                  </div>
+                    <div class="col-lg-8">
+                      <h4 class="card-title">Data Kategori</h4>
+                      <p class="card-description"> Tabel Kategori menampilkan daftar kategori yang tersedia beserta informasi terkait untuk memudahkan pengelompokan data atau produk.
+                      </p>
+                    </div>
+                    <div class="col-lg-4" style="float:right;">
+                      <button class="btn btn-gradient-primary btn-rounded btn-fw" type="button" data-toggle="modal" data-target="#exampleModalScrollable"><i class="fa fa-plus"></i> Tambah Kategori</button>
+                    </div>
                   </div>
                   <table class="table table-striped" id="striped-table">
                     <thead>
@@ -74,19 +74,19 @@
                     </thead>
                     <tbody>
                       <?php
-                        $result = mysqli_query($mysqli, "SELECT * FROM kategori");
-                        $no = 1;
-                       while($kategori = mysqli_fetch_array($result)) {         
-                          echo "<tr>";
-                          echo "<td>".$no++."</td>";
-                          echo "<td>".$kategori['Nama_Kategori']."</td>";
-                          echo "<td>".$kategori['Status']."</td>";
-                          echo "<td><button class='btn btn-xs btn-outline-primary btn-fw'><i class='fa fa-edit'></i> Edit</button>
+                      $result = mysqli_query($mysqli, "SELECT * FROM kategori");
+                      $no = 1;
+                      while ($kategori = mysqli_fetch_array($result)) {
+                        echo "<tr>";
+                        echo "<td>" . $no++ . "</td>";
+                        echo "<td>" . $kategori['Nama_Kategori'] . "</td>";
+                        echo "<td>" . $kategori['Status'] . "</td>";
+                        echo "<td><button class='btn btn-xs btn-outline-primary btn-fw'><i class='fa fa-edit'></i> Edit</button>
                                     <button class='btn btn-xs btn-outline-danger btn-fw'><i class='fa fa-edit'></i> Hapus</button>
-                                </td>"; 
-                          echo "</tr>";
+                                </td>";
+                        echo "</tr>";
                       }
-                        ?>
+                      ?>
                     </tbody>
                   </table>
                 </div>
@@ -95,7 +95,32 @@
           </div>
         </div>
 
-     
+        <div class="modal fade" id="exampleModalScrollable" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-scrollable" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalScrollableTitle">Tambah Kategori</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <!-- Form tambah kategori -->
+                <form>
+                  <div class="form-group">
+                    <label for="kategori-nama">Nama Kategori</label>
+                    <input type="text" class="form-control" id="kategori-nama" placeholder="Masukkan nama kategori">
+                  </div>
+                </form>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                <button type="submit" class="btn btn-primary">Simpan</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         <!-- content-wrapper ends -->
         <!-- partial:../../partials/_footer.html -->
@@ -116,6 +141,8 @@
   <script src="../../assets/vendors/js/vendor.bundle.base.js"></script>
   <!-- jQuery (required by DataTables) -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+
   <!-- DataTables JS -->
   <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 

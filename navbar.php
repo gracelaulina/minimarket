@@ -28,7 +28,10 @@
             <div class="collapse" id="masterdata">
                 <ul class="nav flex-column sub-menu">
                     <li class="nav-item">
-                        <a class="nav-link" href="../../pages/kategori/index.php">Katagori</a>
+                        <?php
+                        $base_url = (isset($_SERVER['HTTPS']) ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'] . "/";
+                        ?>
+                        <a class="nav-link" href="<?= $base_url ?>pages/kategori/index.php">Katagori</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="pages/ui-features/dropdowns.html">Barang</a>
