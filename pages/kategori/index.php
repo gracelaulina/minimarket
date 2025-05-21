@@ -87,10 +87,15 @@
                           echo "<label class='badge badge-danger'>" . $kategori['Status'] . "</label>";
                         }
                         echo "</td>";
-                        echo "<td><button class='btn btn-xs btn-outline-primary btn-fw' onclick='editData(" . $kategori['ID_Kategori'] . ")'><i class='fa fa-edit'></i> Edit</button>
-                                    <button class='btn btn-xs btn-outline-danger btn-fw' onclick='hapus_data(" . $kategori['ID_Kategori'] . ")' ><i class='fa fa-edit'></i> Hapus</button>
-                                </td>";
-                        echo "</tr>";
+                        echo "<td>";
+                        if ($kategori['Status'] == 'Aktif') {
+                          echo "<button class='btn btn-xs btn-outline-primary btn-fw' onclick='unpost(" . $kategori['ID_Kategori'] . ")'>Non-Aktifkan</button>";
+                        } else {
+                          echo "<button class='btn btn-xs btn-outline-primary btn-fw' onclick='editData(" . $kategori['ID_Kategori'] . ")'><i class='fa fa-edit'></i> Edit</button>";
+                          echo "<button class='btn btn-xs btn-outline-danger btn-fw' onclick='hapus_data(" . $kategori['ID_Kategori'] . ")' ><i class='fa fa-edit'></i> Hapus</button>";
+                          echo "<button class='btn btn-xs btn-outline-primary btn-fw' onclick='posting(" . $kategori['ID_Kategori'] . ")'>Aktifkan</button>";
+                        }
+                        echo "</td>";
                       }
                       ?>
                     </tbody>
@@ -348,6 +353,106 @@
                 icon: 'error',
                 title: 'Gagal',
                 text: 'Maaf, produk ini tidak bisa dihapus karena telah dipakai dalam transaksi.',
+              });
+            }
+          });
+        }
+      });
+    }
+
+    function unpost(id_kategori) {
+      Swal.fire({
+        title: 'Are you sure?',
+        text: "Apakah Kategori mau di Non-Aktifkan?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Ya, Non-Aktifkan!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+            type: "POST",
+            url: "<?= $base_url ?>pages/kategori/proses.php",
+            data: {
+              id_kategori: id_kategori,
+              action: "unpost"
+            },
+            dataType: "json",
+            success: function(response) {
+              if (response.success) {
+                Swal.fire({
+                  icon: 'success',
+                  title: 'Berhasil',
+                  text: response.success,
+                  timer: 2000,
+                  showConfirmButton: false
+                }).then(() => {
+                  location.reload();
+                });
+              } else {
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Gagal',
+                  text: response.error || "Terjadi kesalahan.",
+                });
+              }
+            },
+            error: function() {
+              Swal.fire({
+                icon: 'error',
+                title: 'Gagal',
+                text: 'Maaf, produk ini tidak bisa di Non-Aktifkan.',
+              });
+            }
+          });
+        }
+      });
+    }
+
+    function posting(id_kategori) {
+      Swal.fire({
+        title: 'Are you sure?',
+        text: "Apakah Kategori mau di Aktifkan?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Ya, Aktifkan!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+            type: "POST",
+            url: "<?= $base_url ?>pages/kategori/proses.php",
+            data: {
+              id_kategori: id_kategori,
+              action: "posting"
+            },
+            dataType: "json",
+            success: function(response) {
+              if (response.success) {
+                Swal.fire({
+                  icon: 'success',
+                  title: 'Berhasil',
+                  text: response.success,
+                  timer: 2000,
+                  showConfirmButton: false
+                }).then(() => {
+                  location.reload();
+                });
+              } else {
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Gagal',
+                  text: response.error || "Terjadi kesalahan.",
+                });
+              }
+            },
+            error: function() {
+              Swal.fire({
+                icon: 'error',
+                title: 'Gagal',
+                text: 'Maaf, produk ini tidak bisa di Aktifkan.',
               });
             }
           });

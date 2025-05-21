@@ -57,4 +57,25 @@ if (isset($_POST["action"])) {
         }
         exit;
     }
+
+    if ($action == "unpost" && isset($_POST["id_kategori"])) {
+        $id_kategori = $_POST["id_kategori"];
+        $query = mysqli_query($mysqli, "UPDATE kategori SET Status ='Non-Aktif' WHERE ID_Kategori = $id_kategori");
+        if ($query) {
+            echo json_encode(['success' => 'Data berhasil di Non-Aktifkan']);
+        } else {
+            echo json_encode(['error' => 'Data gagal di Non-Aktifkan']);
+        }
+        exit;
+    }
+    if ($action == "posting" && isset($_POST["id_kategori"])) {
+        $id_kategori = $_POST["id_kategori"];
+        $query = mysqli_query($mysqli, "UPDATE kategori SET Status ='Aktif' WHERE ID_Kategori = $id_kategori");
+        if ($query) {
+            echo json_encode(['success' => 'Data berhasil di Aktifkan']);
+        } else {
+            echo json_encode(['error' => 'Data gagal di Aktifkan']);
+        }
+        exit;
+    }
 }
