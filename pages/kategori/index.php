@@ -5,7 +5,7 @@
   <!-- Required meta tags -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>Purple Admin</title>
+  <title>Kategori</title>
   <!-- plugins:css -->
   <link rel="stylesheet" href="../../assets/vendors/mdi/css/materialdesignicons.min.css">
   <link rel="stylesheet" href="../../assets/vendors/ti-icons/css/themify-icons.css">
@@ -80,7 +80,13 @@
                         echo "<tr>";
                         echo "<td>" . $no++ . "</td>";
                         echo "<td>" . $kategori['Nama_Kategori'] . "</td>";
-                        echo "<td>" . $kategori['Status'] . "</td>";
+                        echo "<td>";
+                        if ($kategori['Status'] == 'Aktif') {
+                          echo "<label class='badge badge-success'>" . $kategori['Status'] . "</label>";
+                        } else {
+                          echo "<label class='badge badge-danger'>" . $kategori['Status'] . "</label>";
+                        }
+                        echo "</td>";
                         echo "<td><button class='btn btn-xs btn-outline-primary btn-fw' onclick='editData(" . $kategori['ID_Kategori'] . ")'><i class='fa fa-edit'></i> Edit</button>
                                     <button class='btn btn-xs btn-outline-danger btn-fw' onclick='hapus_data(" . $kategori['ID_Kategori'] . ")' ><i class='fa fa-edit'></i> Hapus</button>
                                 </td>";
