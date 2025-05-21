@@ -60,7 +60,7 @@
                       </p>
                     </div>
                     <div class="col-lg-4" style="float:right;">
-                      <button class="btn btn-gradient-primary btn-rounded btn-fw" type="button" data-toggle="modal" data-target="#exampleModalScrollable"><i class="fa fa-plus"></i> Tambah Kategori</button>
+                      <button class="btn btn-gradient-primary btn-rounded btn-fw" type="button" onclick="tambahData()"><i class="fa fa-plus"></i> Tambah Kategori</button>
                     </div>
                   </div>
                   <table class="table table-striped" id="striped-table">
@@ -81,8 +81,8 @@
                         echo "<td>" . $no++ . "</td>";
                         echo "<td>" . $kategori['Nama_Kategori'] . "</td>";
                         echo "<td>" . $kategori['Status'] . "</td>";
-                        echo "<td><button class='btn btn-xs btn-outline-primary btn-fw'><i class='fa fa-edit'></i> Edit</button>
-                                    <button class='btn btn-xs btn-outline-danger btn-fw'><i class='fa fa-edit'></i> Hapus</button>
+                        echo "<td><button class='btn btn-xs btn-outline-primary btn-fw' onclick='editData(" . $kategori['ID_Kategori'] . ")'><i class='fa fa-edit'></i> Edit</button>
+                                    <button class='btn btn-xs btn-outline-danger btn-fw' onclick='hapus_data(" . $kategori['ID_Kategori'] . ")' ><i class='fa fa-edit'></i> Hapus</button>
                                 </td>";
                         echo "</tr>";
                       }
@@ -100,23 +100,27 @@
             <div class="modal-content">
               <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalScrollableTitle">Tambah Kategori</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="close_modal()">
                   <span aria-hidden="true">&times;</span>
                 </button>
               </div>
-              <div class="modal-body">
-                <!-- Form tambah kategori -->
-                <form>
+              <!-- Form tambah kategori -->
+              <form method="post" target="_self" name="formku" id="formku" class="eventInsForm">
+                <div class="modal-body">
                   <div class="form-group">
                     <label for="kategori-nama">Nama Kategori</label>
-                    <input type="text" class="form-control" id="kategori-nama" placeholder="Masukkan nama kategori">
+                    <input type="hidden" name="kategori-id" id="kategori-id">
+                    <input type="text" class="form-control" id="kategori-nama" name="kategori-nama" placeholder="Masukkan nama kategori">
+                    <div class="invalid-feedback kategori-nama-ada inv-kategori-nama">
+                      &nbsp;
+                    </div>
                   </div>
-                </form>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                <button type="submit" class="btn btn-primary">Simpan</button>
-              </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="close_modal()">Batal</button>
+                  <button type="button" class="btn btn-primary" name="save-data" onclick="simpandata()">Simpan</button>
+                </div>
+              </form>
             </div>
           </div>
         </div>
@@ -138,10 +142,213 @@
   </div>
   <!-- container-scroller -->
   <!-- plugins:js -->
+
   <script src="../../assets/vendors/js/vendor.bundle.base.js"></script>
   <!-- jQuery (required by DataTables) -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    var dsState = "Input";
+
+    function close_modal() {
+      $('#exampleModalScrollable').modal('hide');
+
+    }
+
+    function tambahData() {
+      $('#kategori-id').val('');
+      $('#kategori-nama').val('');
+      dsState = "Input";
+
+      $("#exampleModalScrollableTitle").text('Tambah Kategori');
+      $("#exampleModalScrollable").modal('show');
+    }
+
+    function editData(id_kategori) {
+      dsState = "Edit";
+      $.ajax({
+        type: "POST",
+        url: "<?= $base_url ?>pages/kategori/proses.php",
+        data: {
+          id_kategori: id_kategori,
+          action: 'edit'
+        },
+        dataType: "json",
+        success: function(result) {
+          $('#kategori-nama').val(result.Nama_Kategori);
+          $('#kategori-id').val(result.ID_Kategori);
+
+          $("#exampleModalScrollableTitle").text('Edit Kategori');
+          $("#exampleModalScrollable").modal('show');
+        },
+        error: function(xhr, status, error) {
+          console.error("Gagal mengambil data kategori:", error);
+          alert("Gagal mengambil data kategori.");
+        }
+      });
+    }
+
+    function simpandata() {
+      const nama = $.trim($("#kategori-nama").val());
+
+      if (nama === "") {
+        $(".inv-kategori-nama").html("Nama tidak boleh kosong!");
+        $('#kategori-nama').addClass('is-invalid');
+        setTimeout(() => {
+          $('.inv-kategori-nama').hide(300);
+        }, 3000);
+        return;
+      }
+
+      if (dsState === "Input") {
+        $.ajax({
+          type: "POST",
+          url: "<?= $base_url ?>pages/kategori/proses.php",
+          data: {
+            nama_kategori: nama,
+            action: "cek_kategori"
+          },
+          success: function(result) {
+            if (result === "ADA") {
+              $('.kategori-nama-ada').html("Nama kategori sudah tersedia!");
+              $('.kategori-nama-ada').show();
+            } else {
+              $('.kategori-nama-ada').hide();
+              // ajax simpan data
+              $.ajax({
+                type: "POST",
+                url: "<?= $base_url ?>pages/kategori/proses.php",
+                data: {
+                  nama_kategori: nama,
+                  action: "tambah_data"
+                },
+                dataType: "json",
+                success: function(response) {
+                  $('#exampleModalScrollable').modal('hide');
+                  if (response.success) {
+                    Swal.fire({
+                      icon: 'success',
+                      title: 'Berhasil',
+                      text: response.success,
+                      timer: 2000,
+                      showConfirmButton: false
+                    }).then(() => {
+                      location.reload();
+                    });
+                  } else {
+                    Swal.fire({
+                      icon: 'error',
+                      title: 'Gagal',
+                      text: response.error || "Terjadi kesalahan.",
+                    });
+                  }
+                },
+                error: function() {
+                  Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal',
+                    text: 'Gagal menyimpan data.',
+                  });
+                }
+              });
+            }
+          }
+        });
+      } else {
+        // ajax edit data
+        $.ajax({
+          type: "POST",
+          url: "<?= $base_url ?>pages/kategori/proses.php",
+          data: {
+            nama_kategori: nama,
+            id_kategori: $("#kategori-id").val(),
+            action: "edit_data"
+          },
+          dataType: "json",
+          success: function(response) {
+            $('#exampleModalScrollable').modal('hide');
+            if (response.success) {
+              Swal.fire({
+                icon: 'success',
+                title: 'Berhasil',
+                text: response.success,
+                timer: 2000,
+                showConfirmButton: false
+              }).then(() => {
+                location.reload();
+              });
+            } else {
+              Swal.fire({
+                icon: 'error',
+                title: 'Gagal',
+                text: response.error || "Terjadi kesalahan.",
+              });
+            }
+          },
+          error: function() {
+            Swal.fire({
+              icon: 'error',
+              title: 'Gagal',
+              text: 'Gagal menyimpan data.',
+            });
+          }
+        });
+      }
+    }
+
+    function hapus_data(id_kategori) {
+      Swal.fire({
+        title: 'Are you sure?',
+        text: "Apakah Kategori mau Dihapus?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, Hapus!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+            type: "POST",
+            url: "<?= $base_url ?>pages/kategori/proses.php",
+            data: {
+              id_kategori: id_kategori,
+              action: "hapus_data"
+            },
+            dataType: "json",
+            success: function(response) {
+              if (response.success) {
+                Swal.fire({
+                  icon: 'success',
+                  title: 'Berhasil',
+                  text: response.success,
+                  timer: 2000,
+                  showConfirmButton: false
+                }).then(() => {
+                  location.reload();
+                });
+              } else {
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Gagal',
+                  text: response.error || "Terjadi kesalahan.",
+                });
+              }
+            },
+            error: function() {
+              Swal.fire({
+                icon: 'error',
+                title: 'Gagal',
+                text: 'Maaf, produk ini tidak bisa dihapus karena telah dipakai dalam transaksi.',
+              });
+            }
+          });
+        }
+      });
+    }
+  </script>
 
   <!-- DataTables JS -->
   <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
