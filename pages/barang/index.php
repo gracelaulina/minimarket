@@ -79,6 +79,38 @@
                       </tr>
                     </thead>
                     <tbody>
+                      <?php
+                      $no = 1;
+                      $query_tabel = mysqli_query($mysqli, "SELECT b.*, k.Nama_Kategori AS Nama_Kategori, s.Nama_Perusahaan AS Nama_Supplier FROM barang b LEFT JOIN kategori k ON b.ID_Kategori = k.ID_Kategori LEFT JOIN supplier s ON b.ID_Supplier = s.ID_Supplier");
+                      while ($barang = mysqli_fetch_array($query_tabel)) {
+                        echo "<tr>";
+                        echo "<td>" . $no++ . "</td>";
+                        echo "<td>" . $barang['Nama_Kategori'] . "</td>";
+                        echo "<td>" . $barang['Nama_Barang'] . "</td>";
+                        echo "<td>" . $barang['Nama_Supplier'] . "</td>";
+                        echo "<td class='text-end'>" . number_format($barang['Harga_Beli']) . "</td>";
+                        echo "<td class='text-end'>" . number_format($barang['Harga_Jual']) . "</td>";
+                        echo "<td class='text-end'>" . number_format($barang['Stok']) . "</td>";
+                        echo "<td class='text-end'>" . $barang['Diskon'] . "</td>";
+                        echo "<td>";
+                        if ($barang['Status'] == "Aktif") {
+                          echo "<label class='badge badge-success'>" . $barang['Status'] . "</label>";
+                        } else {
+                          echo "<label class='badge badge-danger'>" . $barang['Status'] . "</label>";
+                        }
+                        echo "</td>";
+                        echo "<td>";
+                        if ($barang['Status'] == 'Aktif') {
+                          echo "<button class='btn btn-xs btn-outline-primary btn-fw padding-button' onclick='unpost(" . $barang['ID_Barang'] . ")'>Non-Aktifkan</button>";
+                        } else {
+                          echo "<button class='btn btn-xs btn-outline-primary btn-fw padding-button' onclick='editData(" . $barang['ID_Barang'] . ")'><i class='fa fa-edit'></i> Edit</button>";
+                          echo "<button class='btn btn-xs btn-outline-danger btn-fw padding-button' onclick='hapus_data(" . $barang['ID_Barang'] . ")' ><i class='fa fa-edit'></i> Hapus</button>";
+                          echo "<button class='btn btn-xs btn-outline-primary btn-fw padding-button' onclick='posting(" . $barang['ID_Barang'] . ")'>Aktifkan</button>";
+                        }
+                        echo "</td>";
+                        echo "</tr>";
+                      }
+                      ?>
                     </tbody>
                   </table>
                 </div>
@@ -99,58 +131,78 @@
               <!-- Form tambah barang -->
               <form method="post" target="_self" name="formku" id="formku" class="eventInsForm">
                 <div class="modal-body">
-                    <div class="row">
-                                    <div class="form-group col-md-6">
-                                <label for="barang-nama">Nama Kategori</label>
-                                <select name="kategori-id" id="kategori-id" class="form-control">
-                                    <option value="">Pilih Kategori</option>
-                                </select>
-                                <div class="invalid-feedback barang-nama-ada inv-barang-nama">
-                                &nbsp;
-                                </div>
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label for="barang-nama">Nama Barang</label>
-                                <input type="hidden" name="barang-id" id="barang-id">
-                                <input type="text" class="form-control" id="barang-nama" name="barang-nama" placeholder="Masukkan nama barang">
-                                <div class="invalid-feedback barang-nama-ada inv-barang-nama">
-                                &nbsp;
-                                </div>
-                            </div>
-                    </div>
-                    <div class="row">
-                            <div class="form-group col-md-6">
-                            <label for="barang-nama">Nama Supplier</label>
-                            <select name="supplier-id" id="supplier-id" class="form-control">
-                                <option value="">Pilih Supplier</option>
-                            </select>
-                            <div class="invalid-feedback supplier-nama-ada inv-supplier-nama">
-                            &nbsp;
-                            </div>
-                        </div>
-                        <div class="form-group col-md-6">
-                            <label for="harga-beli-nama">Harga Beli</label>
-                            <input type="number" name="harga_beli" id="harga_beli" class="form-control">
-                            <div class="invalid-feedback harga_beli-nama-ada inv-harga_beli-nama">
-                            &nbsp;
-                            </div>
-                        </div>
-                    </div>
-                  
                   <div class="row">
-                        <div class="form-group col-md-6">
-                        <label for="harga-jual-nama">Harga Jual</label>
-                        <input type="number" name="harga_jual" id="harga_jual" class="form-control">
-                        <div class="invalid-feedback harga_jual-nama-ada inv-harga_jual-nama">
+                    <div class="form-group col-md-6">
+                      <label for="kategori-id">Nama Kategori</label>
+                      <select name="kategori-id" id="kategori-id" class="form-control">
+                        <option value="">Pilih Kategori</option>
+                        <?php
+                        $query_kategori = mysqli_query($mysqli, "SELECT * FROM kategori");
+                        while ($kategori = mysqli_fetch_array($query_kategori)) {
+                          echo "<option value=" . $kategori['ID_Kategori'] . ">" . $kategori['Nama_Kategori'] . "</option>";
+                        }
+                        ?>
+                      </select>
+                      <div class="invalid-feedback kategori-id-ada inv-kategori-id">
                         &nbsp;
-                        </div>
+                      </div>
                     </div>
                     <div class="form-group col-md-6">
-                        <label for="stok-nama">Stok</label>
-                        <input type="number" name="stok" id="stok" class="form-control">
-                        <div class="invalid-feedback stok-nama-ada inv-stok-nama">
+                      <label for="barang-nama">Nama Barang</label>
+                      <input type="hidden" name="barang-id" id="barang-id">
+                      <input type="text" class="form-control" id="barang-nama" name="barang-nama" placeholder="Masukkan nama barang">
+                      <div class="invalid-feedback barang-nama-ada inv-barang-nama">
                         &nbsp;
-                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="form-group col-md-6">
+                      <label for="harga-beli">Harga Beli</label>
+                      <input type="number" name="harga_beli" id="harga_beli" class="form-control" placeholder="Masukkan Harga Beli">
+                      <div class="invalid-feedback harga_beli-ada inv-harga_beli">
+                        &nbsp;
+                      </div>
+                    </div>
+                    <div class="form-group col-md-6">
+                      <label for="harga-jual">Harga Jual</label>
+                      <input type="number" name="harga_jual" id="harga_jual" class="form-control" placeholder="Masukkan Harga Jual">
+                      <div class="invalid-feedback harga_jual-ada inv-harga_jual">
+                        &nbsp;
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="form-group col-md-6">
+                      <label for="supplier-id">Nama Supplier</label>
+                      <select name="supplier-id" id="supplier-id" class="form-control">
+                        <option value="">Pilih Supplier</option>
+                        <?php
+                        $query_supplier = mysqli_query($mysqli, "SELECT * FROM supplier");
+                        while ($supplier = mysqli_fetch_array($query_supplier)) {
+                          echo "<option value=" . $supplier['ID_Supplier'] . ">" . $supplier['Nama_Perusahaan'] . "</option>";
+                        }
+                        ?>
+                      </select>
+                      <div class="invalid-feedback supplier-id-ada inv-supplier-id">
+                        &nbsp;
+                      </div>
+                    </div>
+                    <div class="form-group col-md-6">
+                      <label for="stok">Stok</label>
+                      <input type="number" name="stok" id="stok" class="form-control" placeholder="Masukkan Stok Awal">
+                      <div class="invalid-feedback stok-ada inv-stok">
+                        &nbsp;
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="form-group col-md-6">
+                      <label for="expired">Expired</label>
+                      <input type="date" name="expired" id="expired" class="form-control">
+                      <div class="invalid-feedback expired-ada inv-expired">
+                        &nbsp;
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -230,37 +282,100 @@
     }
 
     function simpandata() {
-      const nama = $.trim($("#kategori-nama").val());
+      const kategori_id = $.trim($("#kategori-id").val());
+      const barang_nama = $.trim($("#barang-nama").val());
+      const harga_beli = $.trim($("#harga_beli").val());
+      const harga_jual = $.trim($("#harga_jual").val());
+      const supplier_id = $.trim($("#supplier-id").val());
+      const stok = $.trim($("#stok").val());
+      const expired = $.trim($("#expired").val());
 
       if (nama === "") {
-        $(".inv-kategori-nama").html("Nama tidak boleh kosong!");
-        $('#kategori-nama').addClass('is-invalid');
+        $(".inv-kategori-id").html("Kategori tidak boleh kosong!");
+        $('#kategori-id').addClass('is-invalid');
         setTimeout(() => {
-          $('.inv-kategori-nama').hide(300);
+          $('.inv-kategori-id').hide(300);
+        }, 3000);
+        return;
+      }
+      if (barang_nama === "") {
+        $(".inv-barang-nama").html("Nama Barang tidak boleh kosong!");
+        $('#barang-nama').addClass('is-invalid');
+        setTimeout(() => {
+          $('.inv-barang-nama').hide(300);
+        }, 3000);
+        return;
+      }
+      if (harga_beli === "") {
+        $(".inv-harga_beli").html("Harga Beli tidak boleh kosong!");
+        $('#harga_beli').addClass('is-invalid');
+        setTimeout(() => {
+          $('.inv-harga_beli').hide(300);
+        }, 3000);
+        return;
+      }
+      if (harga_jual === "") {
+        $(".inv-harga_jual").html("Harga Jual tidak boleh kosong!");
+        $('#harga_jual').addClass('is-invalid');
+        setTimeout(() => {
+          $('.inv-harga_jual').hide(300);
+        }, 3000);
+        return;
+      }
+      if (supplier_id === "") {
+        $(".inv-supplier_id").html("Supplier tidak boleh kosong!");
+        $('#supplier_id').addClass('is-invalid');
+        setTimeout(() => {
+          $('.inv-supplier_id').hide(300);
+        }, 3000);
+        return;
+      }
+      if (stok === "") {
+        $(".inv-stok").html("Stok tidak boleh kosong!");
+        $('#stok').addClass('is-invalid');
+        setTimeout(() => {
+          $('.inv-stok').hide(300);
+        }, 3000);
+        return;
+      }
+      if (expired === "") {
+        $(".inv-expired").html("Expired tidak boleh kosong!");
+        $('#expired').addClass('is-invalid');
+        setTimeout(() => {
+          $('.inv-expired').hide(300);
         }, 3000);
         return;
       }
 
+
       if (dsState === "Input") {
         $.ajax({
           type: "POST",
-          url: "<?= $base_url ?>pages/kategori/proses.php",
+          url: "<?= $base_url ?>pages/barang/proses.php",
           data: {
             nama_kategori: nama,
-            action: "cek_kategori"
+            action: "cek_barang"
           },
           success: function(result) {
             if (result === "ADA") {
-              $('.kategori-nama-ada').html("Nama kategori sudah tersedia!");
-              $('.kategori-nama-ada').show();
+              $('.barang-nama-ada').html("Nama Barang sudah tersedia!");
+              $('.barang-nama-ada').show();
             } else {
-              $('.kategori-nama-ada').hide();
+              $('.barang-nama-ada').hide();
               // ajax simpan data
               $.ajax({
                 type: "POST",
                 url: "<?= $base_url ?>pages/kategori/proses.php",
                 data: {
-                  nama_kategori: nama,
+                  kategori_id: kategori_id,
+                  barang_nama: barang_nama,
+                  harga_beli: harga_beli,
+                  harga_jual: harga_jual,
+                  supplier_id: supplier_id,
+                  stok: stok,
+                  expired: expired,
+                  stok: stok,
+                  expired: expired,
                   action: "tambah_data"
                 },
                 dataType: "json",
