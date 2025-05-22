@@ -34,16 +34,16 @@
                         <a class="nav-link" href="<?= $base_url ?>pages/kategori/index.php">Katagori</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="pages/ui-features/dropdowns.html">Barang</a>
+                        <a class="nav-link" href="<?= $base_url ?>pages/barang/index.php">Barang</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="pages/ui-features/typography.html">Supplier</a>
+                        <a class="nav-link" href="<?= $base_url ?>pages/supplier/index.php">Supplier</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="pages/ui-features/typography.html">Karyawan</a>
+                        <a class="nav-link" href="<?= $base_url ?>pages/karyawan/index.php">Karyawan</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="pages/ui-features/typography.html">Shift</a>
+                        <a class="nav-link" href="<?= $base_url ?>pages/shift/index.php">Shift</a>
                     </li>
                 </ul>
             </div>
