@@ -250,33 +250,45 @@
 
     function tambahData() {
       $('#kategori-id').val('');
-      $('#kategori-nama').val('');
+      $('#barang-id').val('');
+      $('#barang-nama').val('');
+      $('#harga_beli').val('');
+      $('#harga_jual').val('');
+      $('#supplier-id').val('');
+      $('#stok').val('');
+      $('#expired').val('');
+
       dsState = "Input";
 
       $("#exampleModalScrollableTitle").text('Tambah Barang');
       $("#exampleModalScrollable").modal('show');
     }
 
-    function editData(id_kategori) {
+    function editData(id_barang) {
       dsState = "Edit";
       $.ajax({
         type: "POST",
-        url: "<?= $base_url ?>pages/kategori/proses.php",
+        url: "<?= $base_url ?>pages/barang/proses.php",
         data: {
-          id_kategori: id_kategori,
+          id_barang: id_barang,
           action: 'edit'
         },
         dataType: "json",
         success: function(result) {
-          $('#kategori-nama').val(result.Nama_Kategori);
           $('#kategori-id').val(result.ID_Kategori);
-
-          $("#exampleModalScrollableTitle").text('Edit Kategori');
+          $('#barang-id').val(result.ID_Barang);
+          $('#barang-nama').val(result.Nama_Barang);
+          $('#harga_beli').val(result.Harga_Beli);
+          $('#harga_jual').val(result.Harga_Jual);
+          $('#supplier-id').val(result.ID_Supplier);
+          $('#stok').val(result.Stok);
+          $('#expired').val(result.Expired);
+          $("#exampleModalScrollableTitle").text('Edit Barang');
           $("#exampleModalScrollable").modal('show');
         },
         error: function(xhr, status, error) {
-          console.error("Gagal mengambil data kategori:", error);
-          alert("Gagal mengambil data kategori.");
+          console.error("Gagal mengambil data barang:", error);
+          alert("Gagal mengambil data barang.");
         }
       });
     }
@@ -353,7 +365,7 @@
           type: "POST",
           url: "<?= $base_url ?>pages/barang/proses.php",
           data: {
-            nama_kategori: nama,
+            barang_nama: barang_nama,
             action: "cek_barang"
           },
           success: function(result) {
@@ -365,15 +377,13 @@
               // ajax simpan data
               $.ajax({
                 type: "POST",
-                url: "<?= $base_url ?>pages/kategori/proses.php",
+                url: "<?= $base_url ?>pages/barang/proses.php",
                 data: {
                   kategori_id: kategori_id,
                   barang_nama: barang_nama,
                   harga_beli: harga_beli,
                   harga_jual: harga_jual,
                   supplier_id: supplier_id,
-                  stok: stok,
-                  expired: expired,
                   stok: stok,
                   expired: expired,
                   action: "tambah_data"
@@ -414,10 +424,16 @@
         // ajax edit data
         $.ajax({
           type: "POST",
-          url: "<?= $base_url ?>pages/kategori/proses.php",
+          url: "<?= $base_url ?>pages/barang/proses.php",
           data: {
-            nama_kategori: nama,
-            id_kategori: $("#kategori-id").val(),
+            barang_id: $("#barang-id").val(),
+            kategori_id: kategori_id,
+            barang_nama: barang_nama,
+            harga_beli: harga_beli,
+            harga_jual: harga_jual,
+            supplier_id: supplier_id,
+            stok: stok,
+            expired: expired,
             action: "edit_data"
           },
           dataType: "json",
