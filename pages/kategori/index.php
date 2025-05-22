@@ -22,7 +22,13 @@
   <link rel="shortcut icon" href="../../assets/images/favicon.png" />
   <!-- DataTables CSS -->
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-
+<style>
+  .padding-button{
+    margin-right: 20px !important;
+    min-width: 50px !important;
+    height: 35px !important;
+  }
+</style>
 </head>
 
 <body>
@@ -89,11 +95,11 @@
                         echo "</td>";
                         echo "<td>";
                         if ($kategori['Status'] == 'Aktif') {
-                          echo "<button class='btn btn-xs btn-outline-primary btn-fw' onclick='unpost(" . $kategori['ID_Kategori'] . ")'>Non-Aktifkan</button>";
+                          echo "<button class='btn btn-xs btn-outline-primary btn-fw padding-button' onclick='unpost(" . $kategori['ID_Kategori'] . ")'>Non-Aktifkan</button>";
                         } else {
-                          echo "<button class='btn btn-xs btn-outline-primary btn-fw' onclick='editData(" . $kategori['ID_Kategori'] . ")'><i class='fa fa-edit'></i> Edit</button>";
-                          echo "<button class='btn btn-xs btn-outline-danger btn-fw' onclick='hapus_data(" . $kategori['ID_Kategori'] . ")' ><i class='fa fa-edit'></i> Hapus</button>";
-                          echo "<button class='btn btn-xs btn-outline-primary btn-fw' onclick='posting(" . $kategori['ID_Kategori'] . ")'>Aktifkan</button>";
+                          echo "<button class='btn btn-xs btn-outline-primary btn-fw padding-button' onclick='editData(" . $kategori['ID_Kategori'] . ")'><i class='fa fa-edit'></i> Edit</button>";
+                          echo "<button class='btn btn-xs btn-outline-danger btn-fw padding-button' onclick='hapus_data(" . $kategori['ID_Kategori'] . ")' ><i class='fa fa-edit'></i> Hapus</button>";
+                          echo "<button class='btn btn-xs btn-outline-primary btn-fw padding-button' onclick='posting(" . $kategori['ID_Kategori'] . ")'>Aktifkan</button>";
                         }
                         echo "</td>";
                       }
