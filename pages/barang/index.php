@@ -99,55 +99,60 @@
               <!-- Form tambah barang -->
               <form method="post" target="_self" name="formku" id="formku" class="eventInsForm">
                 <div class="modal-body">
-                  <div class="form-group">
-                    <label for="barang-nama">Nama Kategori</label>
-                    <select name="kategori-id" id="kategori-id" class="form-control">
-                        <option value="">Pilih Kategori</option>
-                    </select>
-                    <div class="invalid-feedback barang-nama-ada inv-barang-nama">
-                      &nbsp;
+                    <div class="row">
+                                    <div class="form-group col-md-6">
+                                <label for="barang-nama">Nama Kategori</label>
+                                <select name="kategori-id" id="kategori-id" class="form-control">
+                                    <option value="">Pilih Kategori</option>
+                                </select>
+                                <div class="invalid-feedback barang-nama-ada inv-barang-nama">
+                                &nbsp;
+                                </div>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="barang-nama">Nama Barang</label>
+                                <input type="hidden" name="barang-id" id="barang-id">
+                                <input type="text" class="form-control" id="barang-nama" name="barang-nama" placeholder="Masukkan nama barang">
+                                <div class="invalid-feedback barang-nama-ada inv-barang-nama">
+                                &nbsp;
+                                </div>
+                            </div>
                     </div>
-                  </div>
-                  <div class="form-group">
-                    <label for="barang-nama">Nama Barang</label>
-                    <input type="hidden" name="barang-id" id="barang-id">
-                    <input type="text" class="form-control" id="barang-nama" name="barang-nama" placeholder="Masukkan nama barang">
-                    <div class="invalid-feedback barang-nama-ada inv-barang-nama">
-                      &nbsp;
+                    <div class="row">
+                            <div class="form-group col-md-6">
+                            <label for="barang-nama">Nama Supplier</label>
+                            <select name="supplier-id" id="supplier-id" class="form-control">
+                                <option value="">Pilih Supplier</option>
+                            </select>
+                            <div class="invalid-feedback supplier-nama-ada inv-supplier-nama">
+                            &nbsp;
+                            </div>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="harga-beli-nama">Harga Beli</label>
+                            <input type="number" name="harga_beli" id="harga_beli" class="form-control">
+                            <div class="invalid-feedback harga_beli-nama-ada inv-harga_beli-nama">
+                            &nbsp;
+                            </div>
+                        </div>
                     </div>
-                  </div>
-                  <div class="form-group">
-                    <label for="barang-nama">Nama Supplier</label>
-                    <select name="supplier-id" id="supplier-id" class="form-control">
-                        <option value="">Pilih Supplier</option>
-                    </select>
-                    <div class="invalid-feedback supplier-nama-ada inv-supplier-nama">
-                      &nbsp;
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <label for="harga-beli-nama">Harga Beli</label>
-                    <input type="number" name="harga_beli" id="harga_beli" class="form-control">
-                    <div class="invalid-feedback harga_beli-nama-ada inv-harga_beli-nama">
-                      &nbsp;
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <label for="harga-jual-nama">Harga Jual</label>
-                    <input type="number" name="harga_jual" id="harga_jual" class="form-control">
-                    <div class="invalid-feedback harga_jual-nama-ada inv-harga_jual-nama">
-                      &nbsp;
-                    </div>
-                  </div>
-                   <div class="form-group">
-                    <label for="stok-nama">Stok</label>
-                    <input type="number" name="stok" id="stok" class="form-control">
-                    <div class="invalid-feedback stok-nama-ada inv-stok-nama">
-                      &nbsp;
-                    </div>
-                  </div>
                   
-                
+                  <div class="row">
+                        <div class="form-group col-md-6">
+                        <label for="harga-jual-nama">Harga Jual</label>
+                        <input type="number" name="harga_jual" id="harga_jual" class="form-control">
+                        <div class="invalid-feedback harga_jual-nama-ada inv-harga_jual-nama">
+                        &nbsp;
+                        </div>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="stok-nama">Stok</label>
+                        <input type="number" name="stok" id="stok" class="form-control">
+                        <div class="invalid-feedback stok-nama-ada inv-stok-nama">
+                        &nbsp;
+                        </div>
+                    </div>
+                  </div>
                 </div>
                 <div class="modal-footer">
                   <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="close_modal()">Batal</button>
