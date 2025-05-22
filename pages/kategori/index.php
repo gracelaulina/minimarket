@@ -22,13 +22,13 @@
   <link rel="shortcut icon" href="../../assets/images/favicon.png" />
   <!-- DataTables CSS -->
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-<style>
-  .padding-button{
-    margin-right: 20px !important;
-    min-width: 50px !important;
-    height: 35px !important;
-  }
-</style>
+  <style>
+    .padding-button {
+      margin-right: 20px !important;
+      min-width: 50px !important;
+      height: 35px !important;
+    }
+  </style>
 </head>
 
 <body>
@@ -358,7 +358,7 @@
               Swal.fire({
                 icon: 'error',
                 title: 'Gagal',
-                text: 'Maaf, produk ini tidak bisa dihapus karena telah dipakai dalam transaksi.',
+                text: 'Maaf, kategori ini tidak bisa dihapus karena telah dipakai dalam transaksi.',
               });
             }
           });

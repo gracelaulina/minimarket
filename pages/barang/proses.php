@@ -17,7 +17,7 @@ if (isset($_POST["action"])) {
         $stok = $_POST["stok"];
         $expired = $_POST["expired"];
 
-        $query_tambah = mysqli_query($mysqli, "INSERT INTO barang (Nama_Barang, ID_Suplier, ID_Kategori, Expired, Harga_Jual, Harga_Beli, Stok,  newArrival_date) VALUES ('$barang_nama',$supplier_id, $kategori_id, '$expired' , $harga_jual, $harga_beli, $stok, NOW())");
+        $query_tambah = mysqli_query($mysqli, "INSERT INTO barang (Nama_Barang, ID_Supplier, ID_Kategori, Expired, Harga_Jual, Harga_Beli, Stok,  newArrival_date) VALUES ('$barang_nama',$supplier_id, $kategori_id, '$expired' , $harga_jual, $harga_beli, $stok, NOW())");
         if ($query_tambah) {
             echo json_encode(['success' => 'Data berhasil ditambah!']);
         } else {
@@ -34,8 +34,8 @@ if (isset($_POST["action"])) {
         $stok = $_POST["stok"];
         $expired = $_POST["expired"];
 
-        $query_edit = mysqli_query($mysqli, "UPDATE barang SET Nama_Barang = '$barang_nama', ID_Suplier = $supplier_id, ID_Kategori = $kategori_id, Expired = '$expired', Harga_Jual = $harga_jual, Harga_Beli = $harga_beli, Stok = $stok  WHERE ID_Barang = $barang_id");
-        if ($query) {
+        $query_edit = mysqli_query($mysqli, "UPDATE barang SET Nama_Barang = '$barang_nama', ID_Supplier = $supplier_id, ID_Kategori = $kategori_id, Expired = '$expired', Harga_Jual = $harga_jual, Harga_Beli = $harga_beli, Stok = $stok  WHERE ID_Barang = $barang_id");
+        if ($query_edit) {
             echo json_encode(['success' => 'Data berhasil diperbarui']);
         } else {
             echo json_encode(['error' => 'Data gagal diperbarui']);
@@ -50,6 +50,38 @@ if (isset($_POST["action"])) {
             echo json_encode($data);
         } else {
             echo json_encode(['error' => 'Data tidak ditemukan']);
+        }
+        exit;
+    }
+
+    if ($action == "hapus_data" && isset($_POST["id_barang"])) {
+        $id_barang = $_POST["id_barang"];
+        $query = mysqli_query($mysqli, "DELETE FROM barang WHERE ID_Barang = $id_barang");
+        if ($query) {
+            echo json_encode(['success' => 'Data berhasil dihapus']);
+        } else {
+            echo json_encode(['error' => 'Maaf, barang ini tidak bisa dihapus karena telah dipakai dalam transaksi.']);
+        }
+        exit;
+    }
+
+    if ($action == "unpost" && isset($_POST["id_barang"])) {
+        $id_barang = $_POST["id_barang"];
+        $query = mysqli_query($mysqli, "UPDATE barang SET Status ='Non-Aktif' WHERE ID_Barang = $id_barang");
+        if ($query) {
+            echo json_encode(['success' => 'Data berhasil di Non-Aktifkan']);
+        } else {
+            echo json_encode(['error' => 'Data gagal di Non-Aktifkan']);
+        }
+        exit;
+    }
+    if ($action == "posting" && isset($_POST["id_barang"])) {
+        $id_barang = $_POST["id_barang"];
+        $query = mysqli_query($mysqli, "UPDATE barang SET Status ='Aktif' WHERE ID_Barang = $id_barang");
+        if ($query) {
+            echo json_encode(['success' => 'Data berhasil di Aktifkan']);
+        } else {
+            echo json_encode(['error' => 'Data gagal di Aktifkan']);
         }
         exit;
     }

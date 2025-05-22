@@ -22,6 +22,22 @@
   <link rel="shortcut icon" href="../../assets/images/favicon.png" />
   <!-- DataTables CSS -->
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+  <style>
+    .table-responsive {
+      overflow-x: auto !important;
+    }
+
+    .table td,
+    .table th {
+      white-space: nowrap !important;
+    }
+
+    .padding-button {
+      margin-right: 20px !important;
+      min-width: 50px !important;
+      height: 35px !important;
+    }
+  </style>
 
 </head>
 
@@ -56,63 +72,67 @@
                   <div class="row">
                     <div class="col-lg-8">
                       <h4 class="card-title">Data Barang</h4>
-                      <p class="card-description">Tabel barang berisi data barang yang akan dijual.
-                      </p>
+                      <p class="card-description">Tabel barang berisi data barang yang akan dijual.</p>
                     </div>
-                    <div class="col-lg-4" style="float:right;">
-                      <button class="btn btn-gradient-primary btn-rounded btn-fw" type="button" onclick="tambahData()"><i class="fa fa-plus"></i> Tambah Barang</button>
+                    <div class="col-lg-4 text-end">
+                      <button class="btn btn-gradient-primary btn-rounded btn-fw" type="button" onclick="tambahData()">
+                        <i class="fa fa-plus"></i> Tambah Barang
+                      </button>
                     </div>
                   </div>
-                  <table class="table table-striped" id="striped-table">
-                    <thead>
-                      <tr>
-                        <th>No.</th>
-                        <th>Nama Kategori</th>
-                        <th>Nama Barang</th>
-                        <th>Nama Supplier</th>
-                        <th>Harga Beli</th>
-                        <th>Harga Jual</th>
-                        <th>Stok</th>
-                        <th>Diskon</th>
-                        <th>Status</th>
-                        <th>Aksi</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <?php
-                      $no = 1;
-                      $query_tabel = mysqli_query($mysqli, "SELECT b.*, k.Nama_Kategori AS Nama_Kategori, s.Nama_Perusahaan AS Nama_Supplier FROM barang b LEFT JOIN kategori k ON b.ID_Kategori = k.ID_Kategori LEFT JOIN supplier s ON b.ID_Supplier = s.ID_Supplier");
-                      while ($barang = mysqli_fetch_array($query_tabel)) {
-                        echo "<tr>";
-                        echo "<td>" . $no++ . "</td>";
-                        echo "<td>" . $barang['Nama_Kategori'] . "</td>";
-                        echo "<td>" . $barang['Nama_Barang'] . "</td>";
-                        echo "<td>" . $barang['Nama_Supplier'] . "</td>";
-                        echo "<td class='text-end'>" . number_format($barang['Harga_Beli']) . "</td>";
-                        echo "<td class='text-end'>" . number_format($barang['Harga_Jual']) . "</td>";
-                        echo "<td class='text-end'>" . number_format($barang['Stok']) . "</td>";
-                        echo "<td class='text-end'>" . $barang['Diskon'] . "</td>";
-                        echo "<td>";
-                        if ($barang['Status'] == "Aktif") {
-                          echo "<label class='badge badge-success'>" . $barang['Status'] . "</label>";
-                        } else {
-                          echo "<label class='badge badge-danger'>" . $barang['Status'] . "</label>";
+
+                  <!-- Table wrapper -->
+                  <div class="table-responsive">
+                    <table class="table table-striped" id="striped-table" style="width: 100%;">
+                      <thead>
+                        <tr>
+                          <th>No.</th>
+                          <th>Nama Kategori</th>
+                          <th>Nama Barang</th>
+                          <th>Nama Supplier</th>
+                          <th>Harga Beli</th>
+                          <th>Harga Jual</th>
+                          <th>Stok</th>
+                          <th>Diskon</th>
+                          <th>Status</th>
+                          <th>Aksi</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <?php
+                        $no = 1;
+                        $query_tabel = mysqli_query($mysqli, "SELECT b.*, k.Nama_Kategori AS Nama_Kategori, s.Nama_Perusahaan AS Nama_Supplier FROM barang b LEFT JOIN kategori k ON b.ID_Kategori = k.ID_Kategori LEFT JOIN supplier s ON b.ID_Supplier = s.ID_Supplier");
+                        while ($barang = mysqli_fetch_array($query_tabel)) {
+                          echo "<tr>";
+                          echo "<td>" . $no++ . "</td>";
+                          echo "<td>" . $barang['Nama_Kategori'] . "</td>";
+                          echo "<td>" . $barang['Nama_Barang'] . "</td>";
+                          echo "<td>" . $barang['Nama_Supplier'] . "</td>";
+                          echo "<td class='text-end'>" . number_format($barang['Harga_Beli']) . "</td>";
+                          echo "<td class='text-end'>" . number_format($barang['Harga_Jual']) . "</td>";
+                          echo "<td class='text-end'>" . number_format($barang['Stok']) . "</td>";
+                          echo "<td class='text-end'>" . $barang['Diskon'] . "</td>";
+                          echo "<td>";
+                          if ($barang['Status'] == "Aktif") {
+                            echo "<label class='badge badge-success'>" . $barang['Status'] . "</label>";
+                          } else {
+                            echo "<label class='badge badge-danger'>" . $barang['Status'] . "</label>";
+                          }
+                          echo "</td>";
+                          echo "<td>";
+                          if ($barang['Status'] == 'Aktif') {
+                            echo "<button class='btn btn-xs btn-outline-primary btn-fw padding-button' onclick='unpost(" . $barang['ID_Barang'] . ")'>Non-Aktifkan</button>";
+                          } else {
+                            echo "<button class='btn btn-xs btn-outline-primary btn-fw padding-button' onclick='editData(" . $barang['ID_Barang'] . ")'><i class='fa fa-edit'></i> Edit</button>";
+                            echo "<button class='btn btn-xs btn-outline-danger btn-fw padding-button' onclick='hapus_data(" . $barang['ID_Barang'] . ")' ><i class='fa fa-edit'></i> Hapus</button>";
+                            echo "<button class='btn btn-xs btn-outline-primary btn-fw padding-button' onclick='posting(" . $barang['ID_Barang'] . ")'>Aktifkan</button>";
+                          }
+                          echo "</td>";
+                          echo "</tr>";
                         }
-                        echo "</td>";
-                        echo "<td>";
-                        if ($barang['Status'] == 'Aktif') {
-                          echo "<button class='btn btn-xs btn-outline-primary btn-fw padding-button' onclick='unpost(" . $barang['ID_Barang'] . ")'>Non-Aktifkan</button>";
-                        } else {
-                          echo "<button class='btn btn-xs btn-outline-primary btn-fw padding-button' onclick='editData(" . $barang['ID_Barang'] . ")'><i class='fa fa-edit'></i> Edit</button>";
-                          echo "<button class='btn btn-xs btn-outline-danger btn-fw padding-button' onclick='hapus_data(" . $barang['ID_Barang'] . ")' ><i class='fa fa-edit'></i> Hapus</button>";
-                          echo "<button class='btn btn-xs btn-outline-primary btn-fw padding-button' onclick='posting(" . $barang['ID_Barang'] . ")'>Aktifkan</button>";
-                        }
-                        echo "</td>";
-                        echo "</tr>";
-                      }
-                      ?>
-                    </tbody>
-                  </table>
+                        ?> </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
             </div>
@@ -294,6 +314,7 @@
     }
 
     function simpandata() {
+      // alert("hai");
       const kategori_id = $.trim($("#kategori-id").val());
       const barang_nama = $.trim($("#barang-nama").val());
       const harga_beli = $.trim($("#harga_beli").val());
@@ -302,7 +323,7 @@
       const stok = $.trim($("#stok").val());
       const expired = $.trim($("#expired").val());
 
-      if (nama === "") {
+      if (kategori_id === "") {
         $(".inv-kategori-id").html("Kategori tidak boleh kosong!");
         $('#kategori-id').addClass('is-invalid');
         setTimeout(() => {
@@ -468,22 +489,22 @@
       }
     }
 
-    function hapus_data(id_kategori) {
+    function hapus_data(id_barang) {
       Swal.fire({
         title: 'Are you sure?',
-        text: "Apakah Kategori mau Dihapus?",
+        text: "Apakah barang mau dihapus?",
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, Hapus!'
+        confirmButtonText: 'Ya, Hapus!'
       }).then((result) => {
         if (result.isConfirmed) {
           $.ajax({
             type: "POST",
-            url: "<?= $base_url ?>pages/kategori/proses.php",
+            url: "<?= $base_url ?>pages/barang/proses.php",
             data: {
-              id_kategori: id_kategori,
+              id_barang: id_barang,
               action: "hapus_data"
             },
             dataType: "json",
@@ -510,7 +531,7 @@
               Swal.fire({
                 icon: 'error',
                 title: 'Gagal',
-                text: 'Maaf, produk ini tidak bisa dihapus karena telah dipakai dalam transaksi.',
+                text: 'Maaf, barang ini tidak bisa dihapus karena telah dipakai dalam transaksi.',
               });
             }
           });
@@ -518,10 +539,10 @@
       });
     }
 
-    function unpost(id_kategori) {
+    function unpost(id_barang) {
       Swal.fire({
         title: 'Are you sure?',
-        text: "Apakah Kategori mau di Non-Aktifkan?",
+        text: "Apakah Barang mau di Non-Aktifkan?",
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
@@ -531,9 +552,9 @@
         if (result.isConfirmed) {
           $.ajax({
             type: "POST",
-            url: "<?= $base_url ?>pages/kategori/proses.php",
+            url: "<?= $base_url ?>pages/barang/proses.php",
             data: {
-              id_kategori: id_kategori,
+              id_barang: id_barang,
               action: "unpost"
             },
             dataType: "json",
@@ -560,7 +581,7 @@
               Swal.fire({
                 icon: 'error',
                 title: 'Gagal',
-                text: 'Maaf, produk ini tidak bisa di Non-Aktifkan.',
+                text: 'Maaf, barang ini tidak bisa di Non-Aktifkan.',
               });
             }
           });
@@ -568,10 +589,10 @@
       });
     }
 
-    function posting(id_kategori) {
+    function posting(id_barang) {
       Swal.fire({
         title: 'Are you sure?',
-        text: "Apakah Kategori mau di Aktifkan?",
+        text: "Apakah barang mau di Aktifkan?",
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
@@ -581,9 +602,9 @@
         if (result.isConfirmed) {
           $.ajax({
             type: "POST",
-            url: "<?= $base_url ?>pages/kategori/proses.php",
+            url: "<?= $base_url ?>pages/barang/proses.php",
             data: {
-              id_kategori: id_kategori,
+              id_barang: id_barang,
               action: "posting"
             },
             dataType: "json",
