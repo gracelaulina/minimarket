@@ -3,7 +3,7 @@ include('../../koneksi.php');
 if (isset($_POST["action"])) {
     $action = $_POST["action"];
     if ($action == "cek_shift" && isset($_POST["Hari"])) {
-        $nama_barang = $_POST["Hari"];
+        $Hari = $_POST["Hari"];
         $query_cek = mysqli_query($mysqli, "SELECT * FROM shift WHERE Hari = '$Hari'");
         echo (mysqli_num_rows($query_cek) > 0) ? "ADA" : "GA ADA";
         exit;
@@ -34,7 +34,7 @@ if (isset($_POST["action"])) {
     }
 
     if ($action == "edit") {
-        $id_barang = $_POST["ID_Karyawan"];
+        $ID_Karyawan = $_POST["ID_Karyawan"];
         $query = mysqli_query($mysqli, "SELECT * FROM shift WHERE ID_Karyawan = $ID_Karyawan");
         if ($data = mysqli_fetch_assoc($query)) {
             echo json_encode($data);
@@ -45,7 +45,7 @@ if (isset($_POST["action"])) {
     }
 
     if ($action == "hapus_data" && isset($_POST["ID_Karyawan"])) {
-        $id_barang = $_POST["ID_Karyawan"];
+        $ID_Karyawan = $_POST["ID_Karyawan"];
         $query = mysqli_query($mysqli, "DELETE FROM shift WHERE ID_Karyawan = $ID_Karyawan");
         if ($query) {
             echo json_encode(['success' => 'Data berhasil dihapus']);
