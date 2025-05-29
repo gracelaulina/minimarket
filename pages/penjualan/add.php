@@ -51,63 +51,202 @@
 
         <div class="container-fluid page-body-wrapper">
             <!-- navbar -->
-            <?php include('../../navbar.php'); ?>
             <!-- tutup navbar -->
             <!-- partial -->
-            <div class="main-panel">
-                <div class="content-wrapper">
+            <div class="main-panel w-100">
+                <div class="content-wrapper ">
                     <div class="page-header">
-                        <h3 class="page-title"> Penjualan </h3>
+                        <h3 class="page-title"> Tambah Penjualan </h3>
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
                                 <li class="breadcrumb-item"><a href="#">Master Data</a></li>
-                                <li class="breadcrumb-item active" aria-current="page">Penjualan</li>
+                                <li class="breadcrumb-item"><a href="#">Penjualan</a></li>
+                                <li class="breadcrumb-item active" aria-current="page">Tambah Penjualan</li>
                             </ol>
                         </nav>
                     </div>
                     <div class="row">
-                        <div class="col-lg-12 grid-margin stretch-card">
+                        <div class="col-lg-6 grid-margin stretch-card">
                             <div class="card">
                                 <div class="card-body">
-                                    <div class="row">
+
+                                    <div class="row align-items-center mb-3">
+                                        <div class="col-lg-4">
+                                            <label for="ID_Karyawan" class="card-description mb-0">Nama Karyawan</label>
+                                        </div>
                                         <div class="col-lg-8">
-                                            <h4 class="card-title">Data Penjualan</h4>
-                                            <p class="card-description">Tabel Penjualan berisi data riwayat penjualan.</p>
-                                        </div>
-                                        <div class="col-lg-4 text-end">
-                                            <a href="<?= $base_url ?>pages/penjualan/add.php" class="btn btn-gradient-primary btn-rounded btn-fw">
-                                                <i class="fa fa-plus"></i> Tambah Penjualan
-                                            </a>
+                                            <select name="ID_Karyawan" id="ID_Karyawan" class="form-control">
+                                                <option value="">Pilih Karyawan</option>
+                                                <?php
+                                                $query_karyawan = mysqli_query($mysqli, "SELECT * FROM karyawan");
+                                                while ($karyawan = mysqli_fetch_array($query_karyawan)) {
+                                                    echo "<option value=" . $karyawan['ID_Karyawan'] . ">" . $karyawan['Nama'] . "</option>";
+                                                }
+                                                ?>
+                                            </select>
                                         </div>
                                     </div>
 
-                                    <!-- Table wrapper -->
-                                    <div class="table-responsive">
-                                        <table class="table table-striped" id="striped-table" style="width: 100%;">
-                                            <thead>
-                                                <tr>
-                                                    <th>No.</th>
-                                                    <th>Kasir</th>
-                                                    <th>Tanggal Penjualan</th>
-                                                    <th>Metode Pembayaran</th>
-                                                    <th>Total</th>
-                                                    <th>Diskon Resi</th>
-                                                    <th>Grandtotal</th>
-                                                    <th>Aksi</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-
-                                            </tbody>
-                                        </table>
+                                    <div class="row align-items-center mb-3">
+                                        <div class="col-lg-4">
+                                            <label for="Tanggal" class="card-description mb-0">Tanggal</label>
+                                        </div>
+                                        <div class="col-lg-8">
+                                            <input type="date" name="Tanggal" id="Tanggal" class="form-control" value="<?= date("Y-m-d") ?>">
+                                        </div>
                                     </div>
+
+                                    <div class="row align-items-center mb-3">
+                                        <div class="col-lg-4">
+                                            <label for="Metode_Pembayaran" class="card-description mb-0">Metode Pembayaran</label>
+                                        </div>
+                                        <div class="col-lg-8">
+                                            <select name="Metode_Pembayaran" id="Metode_Pembayaran" class="form-control">
+                                                <option value="">Pilih Metode Pembayaran</option>
+                                                <option value="Debet">Debet</option>
+                                                <option value="QRIS">QRIS</option>
+                                                <option value="Tunai">Tunai</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6 grid-margin stretch-card">
+                            <div class="card">
+                                <div class="card-body">
+
+                                    <div class="row align-items-center mb-3">
+                                        <div class="col-lg-4">
+                                            <label for="Total" class="card-description mb-0">Total</label>
+                                        </div>
+                                        <div class="col-lg-8">
+                                            <input type="number" name="Total" id="Total" class="form-control">
+                                        </div>
+                                    </div>
+
+                                    <div class="row align-items-center mb-3">
+                                        <div class="col-lg-4">
+                                            <label for="Diskon_Resi" class="card-description mb-0">Diskon Resi</label>
+                                        </div>
+                                        <div class="col-lg-8">
+                                            <input type="number" name="Diskon_Resi" id="Diskon_Resi" class="form-control" placeholder="Masukan Diskon Resi (Rp)">
+                                        </div>
+                                    </div>
+
+                                    <div class="row align-items-center mb-3">
+                                        <div class="col-lg-4">
+                                            <label for="Grandtotal" class="card-description mb-0">Grantotal</label>
+                                        </div>
+                                        <div class="col-lg-8">
+                                            <input type="number" name="Grandtotal" id="Grandtotal" class="form-control">
+                                        </div>
+                                    </div>
+
                                 </div>
                             </div>
                         </div>
                     </div>
+
                 </div>
 
-
+                <div class="modal fade" id="exampleModalScrollable" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-scrollable" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalScrollableTitle">Tambah Barang</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="close_modal()">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <!-- Form tambah barang -->
+                            <form method="post" target="_self" name="formku" id="formku" class="eventInsForm">
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="form-group col-md-6">
+                                            <label for="kategori-id">Nama Kategori</label>
+                                            <select name="kategori-id" id="kategori-id" class="form-control">
+                                                <option value="">Pilih Kategori</option>
+                                                <?php
+                                                $query_kategori = mysqli_query($mysqli, "SELECT * FROM kategori");
+                                                while ($kategori = mysqli_fetch_array($query_kategori)) {
+                                                    echo "<option value=" . $kategori['ID_Kategori'] . ">" . $kategori['Nama_Kategori'] . "</option>";
+                                                }
+                                                ?>
+                                            </select>
+                                            <div class="invalid-feedback kategori-id-ada inv-kategori-id">
+                                                &nbsp;
+                                            </div>
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            <label for="barang-nama">Nama Barang</label>
+                                            <input type="hidden" name="barang-id" id="barang-id">
+                                            <input type="text" class="form-control" id="barang-nama" name="barang-nama" placeholder="Masukkan nama barang">
+                                            <div class="invalid-feedback barang-nama-ada inv-barang-nama">
+                                                &nbsp;
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="form-group col-md-6">
+                                            <label for="harga-beli">Harga Beli</label>
+                                            <input type="number" name="harga_beli" id="harga_beli" class="form-control" placeholder="Masukkan Harga Beli">
+                                            <div class="invalid-feedback harga_beli-ada inv-harga_beli">
+                                                &nbsp;
+                                            </div>
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            <label for="harga-jual">Harga Jual</label>
+                                            <input type="number" name="harga_jual" id="harga_jual" class="form-control" placeholder="Masukkan Harga Jual">
+                                            <div class="invalid-feedback harga_jual-ada inv-harga_jual">
+                                                &nbsp;
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="form-group col-md-6">
+                                            <label for="supplier-id">Nama Supplier</label>
+                                            <select name="supplier-id" id="supplier-id" class="form-control">
+                                                <option value="">Pilih Supplier</option>
+                                                <?php
+                                                $query_supplier = mysqli_query($mysqli, "SELECT * FROM supplier");
+                                                while ($supplier = mysqli_fetch_array($query_supplier)) {
+                                                    echo "<option value=" . $supplier['ID_Supplier'] . ">" . $supplier['Nama_Perusahaan'] . "</option>";
+                                                }
+                                                ?>
+                                            </select>
+                                            <div class="invalid-feedback supplier-id-ada inv-supplier-id">
+                                                &nbsp;
+                                            </div>
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            <label for="stok">Stok</label>
+                                            <input type="number" name="stok" id="stok" class="form-control" placeholder="Masukkan Stok Awal">
+                                            <div class="invalid-feedback stok-ada inv-stok">
+                                                &nbsp;
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="form-group col-md-6">
+                                            <label for="expired">Expired</label>
+                                            <input type="date" name="expired" id="expired" class="form-control">
+                                            <div class="invalid-feedback expired-ada inv-expired">
+                                                &nbsp;
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="close_modal()">Batal</button>
+                                    <button type="button" class="btn btn-primary" name="save-data" onclick="simpandata()">Simpan</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
 
 
                 <!-- content-wrapper ends -->
