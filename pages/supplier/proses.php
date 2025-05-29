@@ -15,7 +15,7 @@ if (isset($_POST["action"])) {
         $Alamat = $_POST["Alamat"];
         $Website = $_POST["Website"];
 
-        $query_tambah = mysqli_query($mysqli, "INSERT INTO supplier (Nama_Perusahaan, Email, Telepon, Alamat, Website) VALUES ('$Nama_Perusahaan','$Email', '$Telepon', '$Alamat' , '$Website',  NOW())");
+        $query_tambah = mysqli_query($mysqli, "INSERT INTO supplier (Nama_Perusahaan, Email, Telepon, Alamat, Website) VALUES ('$Nama_Perusahaan','$Email', '$Telepon', '$Alamat' , '$Website')");
         if ($query_tambah) {
             echo json_encode(['success' => 'Data berhasil ditambah!']);
         } else {
@@ -23,6 +23,7 @@ if (isset($_POST["action"])) {
         }
     }
     if ($action == "edit_data") {
+        $ID_Supplier = $_POST["ID_Supplier"];
         $Nama_Perusahaan = $_POST["Nama_Perusahaan"];
         $Email = $_POST["Email"];
         $Telepon = $_POST["Telepon"];
@@ -55,7 +56,7 @@ if (isset($_POST["action"])) {
         if ($query) {
             echo json_encode(['success' => 'Data berhasil dihapus']);
         } else {
-            echo json_encode(['error' => 'Maaf, barang ini tidak bisa dihapus karena telah dipakai dalam transaksi.']);
+            echo json_encode(['error' => 'Maaf, supplier ini tidak bisa dihapus karena telah dipakai dalam transaksi.']);
         }
         exit;
     }
