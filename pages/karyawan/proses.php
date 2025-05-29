@@ -10,13 +10,12 @@ if (isset($_POST["action"])) {
     }
     if ($action == "tambah_data") {
         $Nama = $_POST["Nama"];
-        $Jenis_kelamin = $_POST["Jenis_kelamin"];
-        $Umur = $_POST["Umur"];
-        $Tanggal_lahir = $_POST["Tanggal_lahir"];
-        $No_telp = $_POST["No_telp"];
+        $Jenis_Kelamin = $_POST["Jenis_Kelamin"];
+        $Tanggal_Lahir = $_POST["Tanggal_Lahir"];
+        $No_Telp = $_POST["No_Telp"];
         $Alamat = $_POST["Alamat"];
 
-        $query_tambah = mysqli_query($mysqli, "INSERT INTO karyawan (Nama, Jenis_kelamin, Umur, Tanggal_lahir, No_telp, Alamat) VALUES ('$Nama',$Jenis_kelamin, $Umur, '$Tanggal_lahir' , $No_telp, $Alamat, NOW())");
+        $query_tambah = mysqli_query($mysqli, "INSERT INTO karyawan (Nama, Jenis_Kelamin, Tanggal_Lahir, No_Telp, Alamat) VALUES ('$Nama','$Jenis_Kelamin', '$Tanggal_Lahir' , '$No_Telp', '$Alamat')");
         if ($query_tambah) {
             echo json_encode(['success' => 'Data berhasil ditambah!']);
         } else {
@@ -26,13 +25,12 @@ if (isset($_POST["action"])) {
     if ($action == "edit_data") {
         $ID_Karyawan = $_POST["ID_Karyawan"];
         $Nama = $_POST["Nama"];
-        $Jenis_kelamin = $_POST["Jenis_kelamin"];
-        $Umur = $_POST["Umur"];
-        $Tanggal_lahir = $_POST["Tanggal_lahir"];
-        $No_telp = $_POST["No_telp"];
+        $Jenis_Kelamin = $_POST["Jenis_Kelamin"];
+        $Tanggal_Lahir = $_POST["Tanggal_Lahir"];
+        $No_Telp = $_POST["No_Telp"];
         $Alamat = $_POST["Alamat"];
 
-        $query_edit = mysqli_query($mysqli, "UPDATE karyawan SET Nama = '$Nama', Jenis_kelamin = $Jenis_kelamin, Umur = $Umur, Tanggal_lahir = '$Tanggal_lahir', No_telp = $No_telp, Alamat = $Alamat  WHERE ID_Karyawan = $ID_Karyawan");
+        $query_edit = mysqli_query($mysqli, "UPDATE karyawan SET Nama = '$Nama', Jenis_Kelamin = '$Jenis_Kelamin', Tanggal_Lahir = '$Tanggal_Lahir', No_Telp = '$No_Telp', Alamat = '$Alamat'  WHERE ID_Karyawan = $ID_Karyawan");
         if ($query_edit) {
             echo json_encode(['success' => 'Data berhasil diperbarui']);
         } else {
@@ -58,10 +56,8 @@ if (isset($_POST["action"])) {
         if ($query) {
             echo json_encode(['success' => 'Data berhasil dihapus']);
         } else {
-            echo json_encode(['error' => 'Maaf, barang ini tidak bisa dihapus karena telah dipakai dalam transaksi.']);
+            echo json_encode(['error' => 'Karyawan ini tidak dapat dihapus karena memiliki riwayat transaksi.']);
         }
         exit;
     }
-
-
 }
