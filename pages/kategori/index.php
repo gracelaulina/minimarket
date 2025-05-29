@@ -47,7 +47,7 @@
       <div class="main-panel">
         <div class="content-wrapper">
           <div class="page-header">
-            <h3 class="page-title"> Tabel Kategori </h3>
+            <h3 class="page-title">Kategori </h3>
             <nav aria-label="breadcrumb">
               <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="#">Master Data</a></li>

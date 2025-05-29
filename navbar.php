@@ -57,10 +57,10 @@
             <div class="collapse" id="transaksi">
                 <ul class="nav flex-column sub-menu">
                     <li class="nav-item">
-                        <a class="nav-link" href="pages/ui-features/buttons.html">Pembelian</a>
+                        <a class="nav-link" href="<?= $base_url ?>pages/pembelian/index.php">Pembelian</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="pages/ui-features/dropdowns.html">Penjualan</a>
+                        <a class="nav-link" href="<?= $base_url ?>pages/penjualan/index.php">Penjualan</a>
                     </li>
                 </ul>
             </div>
