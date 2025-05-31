@@ -80,27 +80,17 @@
                                         </thead>
                                         <tbody>
                                             <?php
-                                            $result = mysqli_query($mysqli, "SELECT * FROM kategori");
+                                            $result = mysqli_query($mysqli, "SELECT u.*, k.Nama AS nama_karyawan  FROM user u LEFT JOIN karyawan k ON u.ID_Karyawan = k.ID_Karyawan");
                                             $no = 1;
-                                            while ($kategori = mysqli_fetch_array($result)) {
+                                            while ($user = mysqli_fetch_array($result)) {
                                                 echo "<tr>";
                                                 echo "<td>" . $no++ . "</td>";
-                                                echo "<td>" . $kategori['Nama_Kategori'] . "</td>";
+                                                echo "<td>" . $user['nama_karyawan'] . "</td>";
+                                                echo "<td>" . $user['username'] . "</td>";
+
                                                 echo "<td>";
-                                                if ($kategori['Status'] == 'Aktif') {
-                                                    echo "<label class='badge badge-success'>" . $kategori['Status'] . "</label>";
-                                                } else {
-                                                    echo "<label class='badge badge-danger'>" . $kategori['Status'] . "</label>";
-                                                }
-                                                echo "</td>";
-                                                echo "<td>";
-                                                if ($kategori['Status'] == 'Aktif') {
-                                                    echo "<button class='btn btn-xs btn-outline-primary btn-fw padding-button' onclick='unpost(" . $kategori['ID_Kategori'] . ")'>Non-Aktifkan</button>";
-                                                } else {
-                                                    echo "<button class='btn btn-xs btn-outline-primary btn-fw padding-button' onclick='editData(" . $kategori['ID_Kategori'] . ")'><i class='fa fa-edit'></i> Edit</button>";
-                                                    echo "<button class='btn btn-xs btn-outline-danger btn-fw padding-button' onclick='hapus_data(" . $kategori['ID_Kategori'] . ")' ><i class='fa fa-edit'></i> Hapus</button>";
-                                                    echo "<button class='btn btn-xs btn-outline-primary btn-fw padding-button' onclick='posting(" . $kategori['ID_Kategori'] . ")'>Aktifkan</button>";
-                                                }
+                                                echo "<button class='btn btn-xs btn-outline-primary btn-fw padding-button' onclick='editData(" . $user['ID_Karyawan'] . ")'><i class='fa fa-edit'></i> Edit</button>";
+                                                echo "<button class='btn btn-xs btn-outline-danger btn-fw padding-button' onclick='hapus_data(" . $user['ID_Karyawan'] . ")' ><i class='fa fa-edit'></i> Hapus</button>";
                                                 echo "</td>";
                                             }
                                             ?>
@@ -116,7 +106,7 @@
                     <div class="modal-dialog modal-dialog-scrollable" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalScrollableTitle">Tambah Kategori</h5>
+                                <h5 class="modal-title" id="exampleModalScrollableTitle">Tambah User</h5>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="close_modal()">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
@@ -125,10 +115,31 @@
                             <form method="post" target="_self" name="formku" id="formku" class="eventInsForm">
                                 <div class="modal-body">
                                     <div class="form-group">
-                                        <label for="kategori-nama">Nama Kategori</label>
-                                        <input type="hidden" name="kategori-id" id="kategori-id">
-                                        <input type="text" class="form-control" id="kategori-nama" name="kategori-nama" placeholder="Masukkan nama kategori">
-                                        <div class="invalid-feedback kategori-nama-ada inv-kategori-nama">
+                                        <label for="ID_Karyawan">Nama User</label>
+                                        <select name="ID_Karyawan" id="ID_Karyawan" class="form-control">
+                                            <option value="">Pilih Karyawan</option>
+                                            <?php
+                                            $query_karyawan = mysqli_query($mysqli, "SELECT * FROM karyawan");
+                                            while ($karyawan = mysqli_fetch_array($query_karyawan)) {
+                                                echo "<option value=" . $karyawan['ID_Karyawan'] . ">" . $karyawan['Nama'] . "</option>";
+                                            }
+                                            ?>
+                                        </select>
+                                        <div class="invalid-feedback ID_Karyawan-ada inv-ID_Karyawan">
+                                            &nbsp;
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="username">Username</label>
+                                        <input type="text" name="username" id="username" class="form-control" placeholder="Masukan username">
+                                        <div class="invalid-feedback username-ada inv-username">
+                                            &nbsp;
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="password">Password</label>
+                                        <input type="password" name="password" id="password" class="form-control" placeholder="Masukan password">
+                                        <div class="invalid-feedback password-ada inv-password">
                                             &nbsp;
                                         </div>
                                     </div>
@@ -176,46 +187,66 @@
         }
 
         function tambahData() {
-            $('#kategori-id').val('');
-            $('#kategori-nama').val('');
+            $('#ID_Karyawan').val('');
+            $('#username').val('');
+            $('#password').val('');
             dsState = "Input";
 
-            $("#exampleModalScrollableTitle").text('Tambah Kategori');
+            $("#exampleModalScrollableTitle").text('Tambah User');
             $("#exampleModalScrollable").modal('show');
         }
 
-        function editData(id_kategori) {
+        function editData(ID_Karyawan) {
             dsState = "Edit";
             $.ajax({
                 type: "POST",
-                url: "<?= $base_url ?>pages/kategori/proses.php",
+                url: "<?= $base_url ?>pages/user/proses.php",
                 data: {
-                    id_kategori: id_kategori,
+                    ID_Karyawan: ID_Karyawan,
                     action: 'edit'
                 },
                 dataType: "json",
                 success: function(result) {
-                    $('#kategori-nama').val(result.Nama_Kategori);
-                    $('#kategori-id').val(result.ID_Kategori);
-
-                    $("#exampleModalScrollableTitle").text('Edit Kategori');
+                    $('#ID_Karyawan').val(result.ID_Karyawan);
+                    $('#username').val(result.username);
+                    $('#password').val(result.password);
+                    $("#exampleModalScrollableTitle").text('Edit User');
                     $("#exampleModalScrollable").modal('show');
                 },
                 error: function(xhr, status, error) {
-                    console.error("Gagal mengambil data kategori:", error);
+                    console.error("Gagal mengambil data user:", error);
                     alert("Gagal mengambil data kategori.");
                 }
             });
         }
 
         function simpandata() {
-            const nama = $.trim($("#kategori-nama").val());
+            const ID_Karyawan = $.trim($("#ID_Karyawan").val());
+            const username = $.trim($("#username").val());
+            const password = $.trim($("#password").val());
 
-            if (nama === "") {
-                $(".inv-kategori-nama").html("Nama tidak boleh kosong!");
-                $('#kategori-nama').addClass('is-invalid');
+
+            if (ID_Karyawan === "") {
+                $(".inv-ID_Karyawan").html("Karyawan tidak boleh kosong!");
+                $('#ID_Karyawan').addClass('is-invalid');
                 setTimeout(() => {
-                    $('.inv-kategori-nama').hide(300);
+                    $('.inv-ID_Karyawan').hide(300);
+                }, 3000);
+                return;
+            }
+            if (username === "") {
+                $(".inv-username").html("username tidak boleh kosong!");
+                $('#username').addClass('is-invalid');
+                setTimeout(() => {
+                    $('.inv-username').hide(300);
+                }, 3000);
+                return;
+            }
+            if (password === "") {
+                $(".inv-password").html("password tidak boleh kosong!");
+                $('#password').addClass('is-invalid');
+                setTimeout(() => {
+                    $('.inv-password').hide(300);
                 }, 3000);
                 return;
             }
@@ -223,23 +254,25 @@
             if (dsState === "Input") {
                 $.ajax({
                     type: "POST",
-                    url: "<?= $base_url ?>pages/kategori/proses.php",
+                    url: "<?= $base_url ?>pages/user/proses.php",
                     data: {
-                        nama_kategori: nama,
-                        action: "cek_kategori"
+                        ID_Karyawan: ID_Karyawan,
+                        action: "cek_user"
                     },
                     success: function(result) {
                         if (result === "ADA") {
-                            $('.kategori-nama-ada').html("Nama kategori sudah tersedia!");
-                            $('.kategori-nama-ada').show();
+                            $('.ID_Karyawan-ada').html("Karyawan sudah punya akses!");
+                            $('.ID_Karyawan-ada').show();
                         } else {
-                            $('.kategori-nama-ada').hide();
+                            $('.ID_Karyawan-ada').hide();
                             // ajax simpan data
                             $.ajax({
                                 type: "POST",
-                                url: "<?= $base_url ?>pages/kategori/proses.php",
+                                url: "<?= $base_url ?>pages/user/proses.php",
                                 data: {
-                                    nama_kategori: nama,
+                                    ID_Karyawan: ID_Karyawan,
+                                    username: username,
+                                    password: password,
                                     action: "tambah_data"
                                 },
                                 dataType: "json",
@@ -278,10 +311,11 @@
                 // ajax edit data
                 $.ajax({
                     type: "POST",
-                    url: "<?= $base_url ?>pages/kategori/proses.php",
+                    url: "<?= $base_url ?>pages/user/proses.php",
                     data: {
-                        nama_kategori: nama,
-                        id_kategori: $("#kategori-id").val(),
+                        ID_Karyawan: ID_Karyawan,
+                        username: username,
+                        password: password,
                         action: "edit_data"
                     },
                     dataType: "json",
@@ -316,10 +350,11 @@
             }
         }
 
-        function hapus_data(id_kategori) {
+
+        function hapus_data(ID_Karyawan) {
             Swal.fire({
                 title: 'Are you sure?',
-                text: "Apakah Kategori mau Dihapus?",
+                text: "Apakah User mau Dihapus?",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
@@ -329,9 +364,9 @@
                 if (result.isConfirmed) {
                     $.ajax({
                         type: "POST",
-                        url: "<?= $base_url ?>pages/kategori/proses.php",
+                        url: "<?= $base_url ?>pages/user/proses.php",
                         data: {
-                            id_kategori: id_kategori,
+                            ID_Karyawan: ID_Karyawan,
                             action: "hapus_data"
                         },
                         dataType: "json",
@@ -358,107 +393,7 @@
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Gagal',
-                                text: 'Maaf, kategori ini tidak bisa dihapus karena telah dipakai dalam transaksi.',
-                            });
-                        }
-                    });
-                }
-            });
-        }
-
-        function unpost(id_kategori) {
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "Apakah Kategori mau di Non-Aktifkan?",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Ya, Non-Aktifkan!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        type: "POST",
-                        url: "<?= $base_url ?>pages/kategori/proses.php",
-                        data: {
-                            id_kategori: id_kategori,
-                            action: "unpost"
-                        },
-                        dataType: "json",
-                        success: function(response) {
-                            if (response.success) {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Berhasil',
-                                    text: response.success,
-                                    timer: 2000,
-                                    showConfirmButton: false
-                                }).then(() => {
-                                    location.reload();
-                                });
-                            } else {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Gagal',
-                                    text: response.error || "Terjadi kesalahan.",
-                                });
-                            }
-                        },
-                        error: function() {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Gagal',
-                                text: 'Maaf, produk ini tidak bisa di Non-Aktifkan.',
-                            });
-                        }
-                    });
-                }
-            });
-        }
-
-        function posting(id_kategori) {
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "Apakah Kategori mau di Aktifkan?",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Ya, Aktifkan!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        type: "POST",
-                        url: "<?= $base_url ?>pages/kategori/proses.php",
-                        data: {
-                            id_kategori: id_kategori,
-                            action: "posting"
-                        },
-                        dataType: "json",
-                        success: function(response) {
-                            if (response.success) {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Berhasil',
-                                    text: response.success,
-                                    timer: 2000,
-                                    showConfirmButton: false
-                                }).then(() => {
-                                    location.reload();
-                                });
-                            } else {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Gagal',
-                                    text: response.error || "Terjadi kesalahan.",
-                                });
-                            }
-                        },
-                        error: function() {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Gagal',
-                                text: 'Maaf, produk ini tidak bisa di Aktifkan.',
+                                text: 'Maaf, user ini tidak bisa dihapus karena telah terlibat dalam transaksi.',
                             });
                         }
                     });
