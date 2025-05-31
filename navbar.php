@@ -77,7 +77,7 @@
                         <a class="nav-link" href="pages/ui-features/buttons.html">Promo</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="pages/ui-features/dropdowns.html">User</a>
+                        <a class="nav-link" href="<?= $base_url ?>pages/user/index.php">User</a>
                     </li>
                 </ul>
             </div>
