@@ -138,7 +138,7 @@
                                             <label for="Total" class="card-description mb-0">Total</label>
                                         </div>
                                         <div class="col-lg-8">
-                                            <input type="number" name="Total" id="Total" class="form-control" value="<?= $data['Total'] ?>">
+                                            <input type="number" name="Total" id="Total" class="form-control" value="<?= $data['Total'] ?>" readonly>
                                         </div>
                                     </div>
 
@@ -156,7 +156,7 @@
                                             <label for="Grandtotal" class="card-description mb-0">Grantotal</label>
                                         </div>
                                         <div class="col-lg-8">
-                                            <input type="number" name="Grandtotal" id="Grandtotal" class="form-control" value="<?= $data['Grandtotal'] ?>">
+                                            <input type="number" name="Grandtotal" id="Grandtotal" class="form-control" value="<?= $data['Grandtotal'] ?>" readonly>
                                         </div>
                                     </div>
 
@@ -378,8 +378,17 @@
         }
 
         $('#Diskon_Resi').on('input', function() {
+            const grandtotal = parseFloat($('#Grandtotal').val()) || 0;
+            let diskonResi = parseFloat($(this).val()) || 0;
+
+            if (diskonResi > grandtotal) {
+                Swal.fire('Peringatan', 'Diskon resi tidak boleh lebih besar dari Grand Total.', 'warning');
+                $(this).val(0);
+            }
+
             updateTotal();
         });
+
 
         function updateTotal() {
             let total = 0;
@@ -398,7 +407,7 @@
         $('#btnSave').on('click', function(e) {
             e.preventDefault();
 
-            const ID_Karyawan = $('#ID_Karyawan').val();
+            const ID_Karyawan = parseInt($('#ID_Karyawan').val()) || 0;
             const Tanggal = $('#Tanggal').val();
             const Metode_Pembayaran = $('#Metode_Pembayaran').val();
             const Total = parseFloat($('#Total').val()) || 0;
@@ -407,6 +416,25 @@
             const delete_id = $('#delete_id').val();
             const ID_Penjualan = $('#ID_Penjualan').val();
 
+            // Validasi wajib isi
+            if (ID_Karyawan === 0) {
+                alert("Isi Karyawan")
+                Swal.fire('Peringatan', 'Silakan pilih karyawan.', 'warning');
+                return;
+            }
+
+            if (!Metode_Pembayaran || Metode_Pembayaran == '') {
+                Swal.fire('Peringatan', 'Silakan pilih metode pembayaran.', 'warning');
+                return;
+            }
+
+            // Validasi diskon tidak boleh lebih dari grandtotal
+            if (Diskon_Resi > Grandtotal) {
+                Swal.fire('Peringatan', 'Diskon resi tidak boleh lebih besar dari Grandtotal.', 'warning');
+                return;
+            }
+
+            // Ambil detail barang
             const detail = [];
             $('#tabel_detail tbody tr').each(function() {
                 const ID_Penjualan_Detail = $(this).find('.ID_Penjualan_Detail').val();
@@ -433,6 +461,7 @@
                 return;
             }
 
+            // Kirim data ke server
             $.ajax({
                 url: '<?= $base_url ?>pages/penjualan/proses.php',
                 method: 'POST',
@@ -468,6 +497,7 @@
                 }
             });
         });
+
 
         $('#btnCancel').on('click', function() {
             window.location.href = '<?= $base_url ?>pages/penjualan/index.php';

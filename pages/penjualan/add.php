@@ -126,7 +126,7 @@
                                             <label for="Total" class="card-description mb-0">Total</label>
                                         </div>
                                         <div class="col-lg-8">
-                                            <input type="number" name="Total" id="Total" class="form-control">
+                                            <input type="number" name="Total" id="Total" class="form-control" readonly>
                                         </div>
                                     </div>
 
@@ -144,7 +144,7 @@
                                             <label for="Grandtotal" class="card-description mb-0">Grantotal</label>
                                         </div>
                                         <div class="col-lg-8">
-                                            <input type="number" name="Grandtotal" id="Grandtotal" class="form-control">
+                                            <input type="number" name="Grandtotal" id="Grandtotal" class="form-control" readonly>
                                         </div>
                                     </div>
 
@@ -335,6 +335,14 @@
         }
 
         $('#Diskon_Resi').on('input', function() {
+            const grandtotal = parseFloat($('#Grandtotal').val()) || 0;
+            let diskonResi = parseFloat($(this).val()) || 0;
+
+            if (diskonResi > grandtotal) {
+                Swal.fire('Peringatan', 'Diskon resi tidak boleh lebih besar dari Grand Total.', 'warning');
+                $(this).val(0);
+            }
+
             updateTotal();
         });
 
@@ -355,12 +363,22 @@
         $('#btnSave').on('click', function(e) {
             e.preventDefault();
 
-            const ID_Karyawan = $('#ID_Karyawan').val();
+            const ID_Karyawan = parseInt($('#ID_Karyawan').val()) || 0;
             const Tanggal = $('#Tanggal').val();
             const Metode_Pembayaran = $('#Metode_Pembayaran').val();
             const Total = parseFloat($('#Total').val()) || 0;
             const Diskon_Resi = parseFloat($('#Diskon_Resi').val()) || 0;
             const Grandtotal = parseFloat($('#Grandtotal').val()) || 0;
+
+            if (ID_Karyawan === 0) {
+                Swal.fire('Peringatan', 'Silakan pilih karyawan.', 'warning');
+                return;
+            }
+
+            if (!Metode_Pembayaran || Metode_Pembayaran == '') {
+                Swal.fire('Peringatan', 'Silakan pilih metode pembayaran.', 'warning');
+                return;
+            }
 
             const detail = [];
 
@@ -404,7 +422,7 @@
 
                     if (res === 'success') {
                         Swal.fire('Berhasil', 'Data penjualan telah disimpan.', 'success').then(() => {
-                            location.reload();
+                            window.location.href = '<?= $base_url ?>pages/penjualan/index.php';
                         });
                     } else {
                         Swal.fire('Gagal', res, 'error');

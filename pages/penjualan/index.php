@@ -113,7 +113,7 @@
                                                     echo "<button class='btn btn-xs btn-outline-primary btn-fw padding-button' onclick='details(" . $penjualan['ID_Penjualan'] . ")'><i class='fa fa-eye'></i></button>";
                                                     echo "<button class='btn btn-xs btn-outline-primary btn-fw padding-button' onclick='editData(" . $penjualan['ID_Penjualan'] . ")'><i class='fa fa-edit'></i> Edit</button>";
                                                     echo "<button class='btn btn-xs btn-outline-danger btn-fw padding-button' onclick='hapus_data(" . $penjualan['ID_Penjualan'] . ")' ><i class='fa fa-edit'></i> Hapus</button>";
-                                                    echo "<button class='btn btn-xs btn-outline-primary btn-fw padding-button' onclick='editData(" . $penjualan['ID_Penjualan'] . ")'><i class='fa fa-file-text-o'></i> Resi</button>";
+                                                    echo "<button class='btn btn-xs btn-outline-primary btn-fw padding-button' onclick='Cetak_Resi(" . $penjualan['ID_Penjualan'] . ")'><i class='fa fa-file-text-o'></i> Resi</button>";
                                                     echo "</td>";
                                                     echo "</tr>";
                                                 }
@@ -185,6 +185,10 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
+        function Cetak_Resi(id) {
+            window.open('<?= $base_url ?>pages/penjualan/cetak_resi.php?id=' + id, '_blank');
+        }
+
         function closeModal() {
             $('#detailModal').modal('hide');
         }
