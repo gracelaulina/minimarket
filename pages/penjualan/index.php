@@ -97,7 +97,27 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-
+                                                <?php
+                                                $no = 1;
+                                                $query_tabel = mysqli_query($mysqli, "SELECT p.*, k.Nama AS nama_karyawan FROM penjualan p LEFT JOIN karyawan k ON p.ID_Karyawan = k.ID_Karyawan");
+                                                while ($penjualan = mysqli_fetch_array($query_tabel)) {
+                                                    echo "<tr>";
+                                                    echo "<td>" . $no++ . "</td>";
+                                                    echo "<td>" . $penjualan['nama_karyawan'] . "</td>";
+                                                    echo "<td>" . $penjualan['Tanggal'] . "</td>";
+                                                    echo "<td>" . $penjualan['Metode_Pembayaran'] . "</td>";
+                                                    echo "<td class='text-end'>" . number_format($penjualan['Total']) . "</td>";
+                                                    echo "<td class='text-end'>" . number_format($penjualan['Diskon_Resi']) . "</td>";
+                                                    echo "<td class='text-end'>" . number_format($penjualan['Grandtotal']) . "</td>";
+                                                    echo "<td>";
+                                                    echo "<button class='btn btn-xs btn-outline-primary btn-fw padding-button' onclick='details(" . $penjualan['ID_Penjualan'] . ")'><i class='fa fa-eye'></i></button>";
+                                                    echo "<button class='btn btn-xs btn-outline-primary btn-fw padding-button' onclick='editData(" . $penjualan['ID_Penjualan'] . ")'><i class='fa fa-edit'></i> Edit</button>";
+                                                    echo "<button class='btn btn-xs btn-outline-danger btn-fw padding-button' onclick='hapus_data(" . $penjualan['ID_Penjualan'] . ")' ><i class='fa fa-edit'></i> Hapus</button>";
+                                                    echo "<button class='btn btn-xs btn-outline-primary btn-fw padding-button' onclick='editData(" . $penjualan['ID_Penjualan'] . ")'><i class='fa fa-file-text-o'></i> Resi</button>";
+                                                    echo "</td>";
+                                                    echo "</tr>";
+                                                }
+                                                ?>
                                             </tbody>
                                         </table>
                                     </div>
@@ -106,6 +126,36 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="modal fade" id="detailModal" tabindex="-1" role="dialog" aria-labelledby="detailModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Detail Penjualan</h5>
+                                <button type="button" class="close" data-dismiss="modal" onclick="closeModal()" aria-label="Tutup">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Nama Barang</th>
+                                            <th>Harga</th>
+                                            <th>Diskon (%)</th>
+                                            <th>Subtotal 1</th>
+                                            <th>Qty</th>
+                                            <th>Subtotal 2</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="detailTableBody">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
 
 
 
@@ -135,6 +185,10 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
+        function closeModal() {
+            $('#detailModal').modal('hide');
+        }
+
         var dsState = "Input";
 
         function close_modal() {
@@ -142,231 +196,11 @@
 
         }
 
-        function tambahData() {
-            $('#kategori-id').val('');
-            $('#barang-id').val('');
-            $('#barang-nama').val('');
-            $('#harga_beli').val('');
-            $('#harga_jual').val('');
-            $('#supplier-id').val('');
-            $('#stok').val('');
-            $('#expired').val('');
 
-            dsState = "Input";
-
-            $("#exampleModalScrollableTitle").text('Tambah Barang');
-            $("#exampleModalScrollable").modal('show');
-        }
-
-        function editData(id_barang) {
-            dsState = "Edit";
-            $.ajax({
-                type: "POST",
-                url: "<?= $base_url ?>pages/barang/proses.php",
-                data: {
-                    id_barang: id_barang,
-                    action: 'edit'
-                },
-                dataType: "json",
-                success: function(result) {
-                    $('#kategori-id').val(result.ID_Kategori);
-                    $('#barang-id').val(result.ID_Barang);
-                    $('#barang-nama').val(result.Nama_Barang);
-                    $('#harga_beli').val(result.Harga_Beli);
-                    $('#harga_jual').val(result.Harga_Jual);
-                    $('#supplier-id').val(result.ID_Supplier);
-                    $('#stok').val(result.Stok);
-                    $('#expired').val(result.Expired);
-                    $("#exampleModalScrollableTitle").text('Edit Barang');
-                    $("#exampleModalScrollable").modal('show');
-                },
-                error: function(xhr, status, error) {
-                    console.error("Gagal mengambil data barang:", error);
-                    alert("Gagal mengambil data barang.");
-                }
-            });
-        }
-
-        function simpandata() {
-            // alert("hai");
-            const kategori_id = $.trim($("#kategori-id").val());
-            const barang_nama = $.trim($("#barang-nama").val());
-            const harga_beli = $.trim($("#harga_beli").val());
-            const harga_jual = $.trim($("#harga_jual").val());
-            const supplier_id = $.trim($("#supplier-id").val());
-            const stok = $.trim($("#stok").val());
-            const expired = $.trim($("#expired").val());
-
-            if (kategori_id === "") {
-                $(".inv-kategori-id").html("Kategori tidak boleh kosong!");
-                $('#kategori-id').addClass('is-invalid');
-                setTimeout(() => {
-                    $('.inv-kategori-id').hide(300);
-                }, 3000);
-                return;
-            }
-            if (barang_nama === "") {
-                $(".inv-barang-nama").html("Nama Barang tidak boleh kosong!");
-                $('#barang-nama').addClass('is-invalid');
-                setTimeout(() => {
-                    $('.inv-barang-nama').hide(300);
-                }, 3000);
-                return;
-            }
-            if (harga_beli === "") {
-                $(".inv-harga_beli").html("Harga Beli tidak boleh kosong!");
-                $('#harga_beli').addClass('is-invalid');
-                setTimeout(() => {
-                    $('.inv-harga_beli').hide(300);
-                }, 3000);
-                return;
-            }
-            if (harga_jual === "") {
-                $(".inv-harga_jual").html("Harga Jual tidak boleh kosong!");
-                $('#harga_jual').addClass('is-invalid');
-                setTimeout(() => {
-                    $('.inv-harga_jual').hide(300);
-                }, 3000);
-                return;
-            }
-            if (supplier_id === "") {
-                $(".inv-supplier_id").html("Supplier tidak boleh kosong!");
-                $('#supplier_id').addClass('is-invalid');
-                setTimeout(() => {
-                    $('.inv-supplier_id').hide(300);
-                }, 3000);
-                return;
-            }
-            if (stok === "") {
-                $(".inv-stok").html("Stok tidak boleh kosong!");
-                $('#stok').addClass('is-invalid');
-                setTimeout(() => {
-                    $('.inv-stok').hide(300);
-                }, 3000);
-                return;
-            }
-            if (expired === "") {
-                $(".inv-expired").html("Expired tidak boleh kosong!");
-                $('#expired').addClass('is-invalid');
-                setTimeout(() => {
-                    $('.inv-expired').hide(300);
-                }, 3000);
-                return;
-            }
-
-
-            if (dsState === "Input") {
-                $.ajax({
-                    type: "POST",
-                    url: "<?= $base_url ?>pages/barang/proses.php",
-                    data: {
-                        barang_nama: barang_nama,
-                        action: "cek_barang"
-                    },
-                    success: function(result) {
-                        if (result === "ADA") {
-                            $('.barang-nama-ada').html("Nama Barang sudah tersedia!");
-                            $('.barang-nama-ada').show();
-                        } else {
-                            $('.barang-nama-ada').hide();
-                            // ajax simpan data
-                            $.ajax({
-                                type: "POST",
-                                url: "<?= $base_url ?>pages/barang/proses.php",
-                                data: {
-                                    kategori_id: kategori_id,
-                                    barang_nama: barang_nama,
-                                    harga_beli: harga_beli,
-                                    harga_jual: harga_jual,
-                                    supplier_id: supplier_id,
-                                    stok: stok,
-                                    expired: expired,
-                                    action: "tambah_data"
-                                },
-                                dataType: "json",
-                                success: function(response) {
-                                    $('#exampleModalScrollable').modal('hide');
-                                    if (response.success) {
-                                        Swal.fire({
-                                            icon: 'success',
-                                            title: 'Berhasil',
-                                            text: response.success,
-                                            timer: 2000,
-                                            showConfirmButton: false
-                                        }).then(() => {
-                                            location.reload();
-                                        });
-                                    } else {
-                                        Swal.fire({
-                                            icon: 'error',
-                                            title: 'Gagal',
-                                            text: response.error || "Terjadi kesalahan.",
-                                        });
-                                    }
-                                },
-                                error: function() {
-                                    Swal.fire({
-                                        icon: 'error',
-                                        title: 'Gagal',
-                                        text: 'Gagal menyimpan data.',
-                                    });
-                                }
-                            });
-                        }
-                    }
-                });
-            } else {
-                // ajax edit data
-                $.ajax({
-                    type: "POST",
-                    url: "<?= $base_url ?>pages/barang/proses.php",
-                    data: {
-                        barang_id: $("#barang-id").val(),
-                        kategori_id: kategori_id,
-                        barang_nama: barang_nama,
-                        harga_beli: harga_beli,
-                        harga_jual: harga_jual,
-                        supplier_id: supplier_id,
-                        stok: stok,
-                        expired: expired,
-                        action: "edit_data"
-                    },
-                    dataType: "json",
-                    success: function(response) {
-                        $('#exampleModalScrollable').modal('hide');
-                        if (response.success) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Berhasil',
-                                text: response.success,
-                                timer: 2000,
-                                showConfirmButton: false
-                            }).then(() => {
-                                location.reload();
-                            });
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Gagal',
-                                text: response.error || "Terjadi kesalahan.",
-                            });
-                        }
-                    },
-                    error: function() {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Gagal',
-                            text: 'Gagal menyimpan data.',
-                        });
-                    }
-                });
-            }
-        }
-
-        function hapus_data(id_barang) {
+        function hapus_data(id_penjualan) {
             Swal.fire({
                 title: 'Are you sure?',
-                text: "Apakah barang mau dihapus?",
+                text: "Apakah transaksi mau dihapus?",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
@@ -376,9 +210,9 @@
                 if (result.isConfirmed) {
                     $.ajax({
                         type: "POST",
-                        url: "<?= $base_url ?>pages/barang/proses.php",
+                        url: "<?= $base_url ?>pages/penjualan/proses.php",
                         data: {
-                            id_barang: id_barang,
+                            id_penjualan: id_penjualan,
                             action: "hapus_data"
                         },
                         dataType: "json",
@@ -405,7 +239,7 @@
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Gagal',
-                                text: 'Maaf, barang ini tidak bisa dihapus karena telah dipakai dalam transaksi.',
+                                text: 'Maaf, Hapus gagal:).',
                             });
                         }
                     });
@@ -413,104 +247,31 @@
             });
         }
 
-        function unpost(id_barang) {
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "Apakah Barang mau di Non-Aktifkan?",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Ya, Non-Aktifkan!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        type: "POST",
-                        url: "<?= $base_url ?>pages/barang/proses.php",
-                        data: {
-                            id_barang: id_barang,
-                            action: "unpost"
-                        },
-                        dataType: "json",
-                        success: function(response) {
-                            if (response.success) {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Berhasil',
-                                    text: response.success,
-                                    timer: 2000,
-                                    showConfirmButton: false
-                                }).then(() => {
-                                    location.reload();
-                                });
-                            } else {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Gagal',
-                                    text: response.error || "Terjadi kesalahan.",
-                                });
-                            }
-                        },
-                        error: function() {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Gagal',
-                                text: 'Maaf, barang ini tidak bisa di Non-Aktifkan.',
-                            });
-                        }
-                    });
+
+
+
+        function details(idPenjualan) {
+            $('#detailModal').modal('show');
+            $('#detailTableBody').html('');
+
+            $.ajax({
+                url: '<?= $base_url ?>pages/penjualan/proses.php',
+                type: 'POST',
+                data: {
+                    id: idPenjualan,
+                    action: 'lihat_detail'
+                },
+                success: function(response) {
+                    $('#detailTableBody').append(response);
+                },
+                error: function() {
+                    $('#detailTableBody').append('<tr><td colspan="6" class="text-danger">Gagal mengambil data.</td></tr>');
                 }
             });
         }
 
-        function posting(id_barang) {
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "Apakah barang mau di Aktifkan?",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Ya, Aktifkan!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        type: "POST",
-                        url: "<?= $base_url ?>pages/barang/proses.php",
-                        data: {
-                            id_barang: id_barang,
-                            action: "posting"
-                        },
-                        dataType: "json",
-                        success: function(response) {
-                            if (response.success) {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Berhasil',
-                                    text: response.success,
-                                    timer: 2000,
-                                    showConfirmButton: false
-                                }).then(() => {
-                                    location.reload();
-                                });
-                            } else {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Gagal',
-                                    text: response.error || "Terjadi kesalahan.",
-                                });
-                            }
-                        },
-                        error: function() {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Gagal',
-                                text: 'Maaf, produk ini tidak bisa di Aktifkan.',
-                            });
-                        }
-                    });
-                }
-            });
+        function editData(id) {
+            window.location.href = "<?= $base_url ?>pages/penjualan/edit.php?id_penjualan=" + id;
         }
     </script>
 
@@ -523,6 +284,7 @@
             $('#striped-table').DataTable();
         });
     </script>
+
 
     <!-- endinject -->
     <!-- Plugin js for this page -->

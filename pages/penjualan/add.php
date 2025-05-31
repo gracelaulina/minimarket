@@ -177,6 +177,7 @@
                                     </table>
                                     <button class="btn btn-primary" id="tambahItem">Tambah Item</button>
                                     <button id="btnSave" class="btn btn-primary">Simpan</button>
+                                    <button id="btnCancel" class="btn btn-danger">Batal</button>
                                 </div>
                             </div>
                         </div>
@@ -337,7 +338,6 @@
             updateTotal();
         });
 
-        // Hitung dan tampilkan total ke #Total
         function updateTotal() {
             let total = 0;
             $('.subtotal2').each(function() {
@@ -414,6 +414,9 @@
                     Swal.fire('Gagal', xhr.responseText || 'Terjadi kesalahan saat menyimpan.', 'error');
                 }
             });
+        });
+        $('#btnCancel').on('click', function() {
+            window.location.href = '<?= $base_url ?>pages/penjualan/index.php';
         });
     </script>
 
