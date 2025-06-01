@@ -87,30 +87,31 @@
                                             <thead>
                                                 <tr>
                                                     <th>No.</th>
-                                                    <th>Supplier</th>
-                                                    <th>Karyawan</th>
-                                                    <th>Tanggal Pembelian</th>
-                                                    <th>Metode  Pembayaran</th>
-                                                    <th>Grandtotal</th>
+                                                    <th>Nama Promo</th>
+                                                    <th>Tanggal Awal</th>
+                                                    <th>Tanggal Akhir</th>
                                                     <th>Aksi</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <?php
                                                 $no = 1;
-                                                $query_tabel = mysqli_query($mysqli, "SELECT p.*,s.Nama_Perusahaan AS nama_perusahaan, k.Nama AS nama_karyawan FROM pembelian p LEFT JOIN supplier s ON p.ID_Supplier = s.ID_Supplier LEFT JOIN karyawan k ON p.ID_Karyawan = k.ID_Karyawan");
-                                                while ($pembelian = mysqli_fetch_array($query_tabel)) {
+                                                $query_tabel = mysqli_query($mysqli, "SELECT * FROM promo_musiman");
+                                                while ($promo = mysqli_fetch_array($query_tabel)) {
                                                     echo "<tr>";
                                                     echo "<td>" . $no++ . "</td>";
-                                                    echo "<td>" . $pembelian['nama_perusahaan'] . "</td>";
-                                                    echo "<td>" . $pembelian['nama_karyawan'] . "</td>";
-                                                    echo "<td>" . $pembelian['Tanggal_Pembelian'] . "</td>";
-                                                    echo "<td>" . $pembelian['Metode_Pembayaran'] . "</td>";
-                                                    echo "<td class='text-end'>" . number_format($pembelian['Grandtotal']) . "</td>";
+                                                    echo "<td>" . $promo['Nama_Promo'] . "</td>";
+                                                    echo "<td>" . $promo['Tanggal_Awal'] . "</td>";
+                                                    echo "<td>" . $promo['Tanggal_Akhir'] . "</td>";
                                                     echo "<td>";
-                                                    echo "<button class='btn btn-xs btn-outline-primary btn-fw padding-button' onclick='details(" . $pembelian['ID_Pembelian'] . ")'><i class='fa fa-eye'></i></button>";
-                                                    echo "<button class='btn btn-xs btn-outline-primary btn-fw padding-button' onclick='editData(" . $pembelian['ID_Pembelian'] . ")'><i class='fa fa-edit'></i> Edit</button>";
-                                                    echo "<button class='btn btn-xs btn-outline-danger btn-fw padding-button' onclick='hapus_data(" . $pembelian['ID_Pembelian'] . ")' ><i class='fa fa-edit'></i> Hapus</button>";
+                                                    if($promo['Status']=="Aktif"){
+                                                    echo "<button class='btn btn-xs btn-outline-primary btn-fw padding-button' onclick='unpost(" . $promo['ID_Promo_Musiman'] . ")'>Non-Aktifkan</button>";
+                                                    }else{
+                                                    echo "<button class='btn btn-xs btn-outline-primary btn-fw padding-button' onclick='details(" . $promo['ID_Promo_Musiman'] . ")'><i class='fa fa-eye'></i></button>";
+                                                    echo "<button class='btn btn-xs btn-outline-primary btn-fw padding-button' onclick='editData(" . $promo['ID_Promo_Musiman'] . ")'><i class='fa fa-edit'></i> Edit</button>";
+                                                    echo "<button class='btn btn-xs btn-outline-danger btn-fw padding-button' onclick='hapus_data(" . $promo['ID_Promo_Musiman'] . ")' ><i class='fa fa-edit'></i> Hapus</button>";
+                                                    echo "<button class='btn btn-xs btn-outline-primary btn-fw padding-button' onclick='posting(" . $promo['ID_Promo_Musiman'] . ")'>Aktifkan</button>";
+                                                    }
                                                     echo "</td>";
                                                     echo "</tr>";
                                                 }
@@ -128,7 +129,7 @@
                     <div class="modal-dialog modal-lg" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title">Detail Pembelian</h5>
+                                <h5 class="modal-title">Detail Promo</h5>
                                 <button type="button" class="close" data-dismiss="modal" onclick="closeModal()" aria-label="Tutup">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
@@ -140,9 +141,7 @@
                                             <th>Nama Barang</th>
                                             <th>Harga</th>
                                             <th>Diskon (%)</th>
-                                            <th>Subtotal 1</th>
-                                            <th>Qty</th>
-                                            <th>Subtotal 2</th>
+                                            <th>Harga setelah Diskon</th>
                                         </tr>
                                     </thead>
                                     <tbody id="detailTableBody">
@@ -251,7 +250,7 @@
 
 
 
-        function details(idPembelian) {
+        function details(idPromo) {
             $('#detailModal').modal('show');
             $('#detailTableBody').html('');
 
@@ -259,7 +258,7 @@
                 url: '<?= $base_url ?>pages/promo/proses.php',
                 type: 'POST',
                 data: {
-                    id: idPembelian,
+                    id: idPromo,
                     action: 'lihat_detail'
                 },
                 success: function(response) {

@@ -19,10 +19,8 @@ if (isset($_POST["action"])) {
                 'label'     => $row['Nama_Barang'],
                 'value'     => $row['Nama_Barang'],
                 'ID_Barang' => $row['ID_Barang'],
-                'kategori'  => $row['ID_Kategori'],
-                'harga'     => $row['Harga_Beli'],
-                'diskon'    => $row['Diskon'],
-            ];
+                'harga'     => $row['Harga_Jual']
+                        ];
         }
 
         header('Content-Type: application/json');
@@ -30,37 +28,33 @@ if (isset($_POST["action"])) {
         exit;
     }
     if ($action == "tambah_data") {
-        $ID_Supplier        = mysqli_real_escape_string($mysqli, $_POST['ID_Supplier']);
-        $Tanggal_Pembelian  = mysqli_real_escape_string($mysqli, $_POST['Tanggal_Pembelian']);
-        $Metode_Pembayaran  = mysqli_real_escape_string($mysqli, $_POST['Metode_Pembayaran']);
-        $Grandtotal         = mysqli_real_escape_string($mysqli, $_POST['Grandtotal']);
-        $ID_Karyawan        = mysqli_real_escape_string($mysqli, $_POST['ID_Karyawan']);
-        $detail             = json_decode($_POST['detail'], true);
+        $Nama_Promo    = mysqli_real_escape_string($mysqli, $_POST['Nama_Promo']);
+        $Tanggal_Awal  = mysqli_real_escape_string($mysqli, $_POST['Tanggal_Awal']);
+        $Tanggal_Akhir = mysqli_real_escape_string($mysqli, $_POST['Tanggal_Akhir']);
+        $detail        = json_decode($_POST['detail'], true);
 
 
         try {
             $mysqli->begin_transaction();
-            $query_pembelian = "INSERT INTO pembelian 
-            (ID_Supplier, ID_Karyawan, Tanggal_Pembelian, Metode_Pembayaran, Grandtotal) 
-            VALUES ('$ID_Supplier','$ID_Karyawan', '$Tanggal_Pembelian', '$Metode_Pembayaran', '$Grandtotal')";
-            $insert_pembelian = mysqli_query($mysqli, $query_pembelian);
+            $query_pembelian = "INSERT INTO promo_musiman 
+            (Nama_Promo, Tanggal_Awal, Tanggal_Akhir, Status) 
+            VALUES ('$Nama_Promo','$Tanggal_Awal', '$Tanggal_Akhir', 'Aktif')";
+            $insert_promo = mysqli_query($mysqli, $query_pembelian);
 
-            if (!$insert_pembelian) {
-                throw new Exception("Gagal insert pembelian: " . mysqli_error($mysqli));
+            if (!$insert_promo) {
+                throw new Exception("Gagal insert promo: " . mysqli_error($mysqli));
             }
 
-            $id_pembelian = mysqli_insert_id($mysqli);
+            $ID_Promo_Musiman = mysqli_insert_id($mysqli);
 
             foreach ($detail as $item) {
                 $id_barang   = mysqli_real_escape_string($mysqli, $item['id_barang']);
-                $id_kategori = mysqli_real_escape_string($mysqli, $item['id_kategori']);
                 $harga       = mysqli_real_escape_string($mysqli, $item['harga']);
                 $diskon      = mysqli_real_escape_string($mysqli, $item['diskon']);
-                $qty         = mysqli_real_escape_string($mysqli, $item['qty']);
 
-                $query_detail = "INSERT INTO detail_pembelian
-                (ID_Pembelian, ID_Barang, ID_Kategori, Harga, Diskon, Qty)
-                VALUES ('$id_pembelian', '$id_barang', '$id_kategori', '$harga', '$diskon', '$qty')";
+                $query_detail = "INSERT INTO detail_promo_musiman
+                (ID_Promo_Musiman, ID_Barang, Harga, Diskon)
+                VALUES ('$ID_Promo_Musiman', '$id_barang', '$harga', '$diskon')";
                 $insert_detail = mysqli_query($mysqli, $query_detail);
 
                 if (!$insert_detail) {
@@ -80,10 +74,7 @@ if (isset($_POST["action"])) {
         if (isset($_POST['id'])) {
             $id = $_POST['id'];
 
-            $stmt = mysqli_prepare($mysqli, "SELECT dp.*, b.Nama_Barang AS nama_barang 
-                                         FROM detail_pembelian dp 
-                                         LEFT JOIN barang b ON dp.ID_Barang = b.ID_Barang 
-                                         WHERE dp.ID_Pembelian = ?");
+            $stmt = mysqli_prepare($mysqli, "SELECT p.*, b.Nama_Barang FROM detail_promo_musiman p LEFT JOIN barang b ON p.ID_Barang = b.ID_Barang  WHERE p.ID_Promo_Musiman = ?");
             mysqli_stmt_bind_param($stmt, "i", $id);
             mysqli_stmt_execute($stmt);
 
@@ -93,21 +84,16 @@ if (isset($_POST["action"])) {
                 while ($row = mysqli_fetch_assoc($result)) {
                     $harga = $row['Harga'];
                     $diskon = $row['Diskon'];
-                    $qty = $row['Qty'];
-                    $subtotal1 = $harga - ($harga * $diskon / 100);
-                    $subtotal2 = $subtotal1 * $qty;
-
+                    $harga_disc = $harga - ($harga * $diskon / 100);
                     echo "<tr>
-                        <td>{$row['nama_barang']}</td>
+                        <td>{$row['Nama_Barang']}</td>
                         <td>Rp " . number_format($harga, 0, ',', '.') . "</td>
                         <td>{$diskon}%</td>
-                        <td>Rp " . number_format($subtotal1, 0, ',', '.') . "</td>
-                        <td>{$qty}</td>
-                        <td>Rp " . number_format($subtotal2, 0, ',', '.') . "</td>
+                        <td>Rp " . number_format($harga_disc, 0, ',', '.') . "</td>
                       </tr>";
                 }
             } else {
-                echo "<tr><td colspan='6' class='text-muted'>Tidak ada detail pembelian.</td></tr>";
+                echo "<tr><td colspan='6' class='text-muted'>Tidak ada detail promo.</td></tr>";
             }
         } else {
             echo "<tr><td colspan='6' class='text-danger'>ID tidak ditemukan.</td></tr>";
@@ -121,7 +107,7 @@ if (isset($_POST["action"])) {
         $ID_Karyawan        = mysqli_real_escape_string($mysqli, $_POST['ID_Karyawan']);
         $delete_id           = isset($_POST['delete_id']) ? $_POST['delete_id'] : '';
         $detail              = json_decode($_POST['detail'], true);
-        $ID_Pembelian        = mysqli_real_escape_string($mysqli, $_POST['ID_Pembelian']);
+        $ID_Promo_Musiman        = mysqli_real_escape_string($mysqli, $_POST['ID_Pembelian']);
 
 
         // Update pembelian
@@ -133,7 +119,7 @@ if (isset($_POST["action"])) {
                         Grandtotal = ?
                     WHERE ID_Pembelian = ?";
         $stmt = $mysqli->prepare($update_query);
-        $stmt->bind_param("iissdi", $ID_Supplier, $ID_Karyawan, $Tanggal_Pembelian, $Metode_Pembayaran, $Grandtotal, $ID_Pembelian);
+        $stmt->bind_param("iissdi", $ID_Supplier, $ID_Karyawan, $Tanggal_Pembelian, $Metode_Pembayaran, $Grandtotal, $ID_Promo_Musiman);
         $stmt->execute();
 
         // Hapus detail jika ada
@@ -166,7 +152,7 @@ if (isset($_POST["action"])) {
                 $stmt = $mysqli->prepare("INSERT INTO detail_pembelian 
                                         (ID_Pembelian, ID_Barang, ID_Kategori, Harga, Qty, Diskon) 
                                       VALUES (?, ?, ?, ?, ?, ?)");
-                $stmt->bind_param("iiidii", $ID_Pembelian, $ID_Barang, $Kategori, $Harga, $Qty, $Diskon);
+                $stmt->bind_param("iiidii", $ID_Promo_Musiman, $ID_Barang, $Kategori, $Harga, $Qty, $Diskon);
             }
 
             $stmt->execute();
@@ -175,13 +161,13 @@ if (isset($_POST["action"])) {
         echo json_encode([
             'success' => true,
             'message' => 'Data berhasil diperbarui',
-            'ID_Pembelian' => $ID_Pembelian
+            'ID_Pembelian' => $ID_Promo_Musiman
         ]);
         exit;
     }
     if ($action == "hapus_data") {
-        $ID_Pembelian = $_POST["ID_Pembelian"];
-        $query = mysqli_query($mysqli, "DELETE FROM detail_pembelian WHERE ID_Pembelian = $ID_Pembelian");
+        $ID_Promo_Musiman = $_POST["ID_Pembelian"];
+        $query = mysqli_query($mysqli, "DELETE FROM detail_pembelian WHERE ID_Pembelian = $ID_Promo_Musiman");
         $query2 = mysqli_query($mysqli, "DELETE FROM pembelian WHERE ID_Pembelian = $ID_Pembelian");
 
         if ($query2) {

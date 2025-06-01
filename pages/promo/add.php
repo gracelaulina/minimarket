@@ -102,7 +102,7 @@
                                         </div>
                                         <div class="col-lg-8 d-flex">
                                             <input type="number" name="apply_diskon" id="apply_diskon" class="form-control" >
-                                            <button type="button" class="btn btn-primary">Apply</button>
+                                            <button type="button" class="btn btn-primary" id="apply_all">Apply</button>
                                         </div>
                                     </div>
                                 </div>
@@ -122,10 +122,8 @@
                                                 <th>No.</th>
                                                 <th>Nama Barang</th>
                                                 <th>Harga</th>
-                                                <th>Diskon</th>
-                                                <th>Subtotal 1 (Harga - Diskon)</th>
-                                                <th>Qty</th>
-                                                <th>Subtotal 2 (Subtotal 1 * Qty)</th>
+                                                <th>Diskon (%)</th>
+                                                <th>Harga Setelah Diskon</th>
                                                 <th>Aksi</th>
                                             </tr>
                                         </thead>
@@ -170,6 +168,13 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
+        $('#apply_all').on('click', function() {
+            let diskon = parseFloat($('#apply_diskon').val()) || 0;
+
+            $('input[name="diskon[]"]').each(function() {
+                $(this).val(diskon).trigger('change'); 
+            });
+        });
         let counter = 1;
 
         $('#tambahItem').on('click', function() {
@@ -178,14 +183,11 @@
                 <td>${counter++}</td>
                 <td>
                     <input type="text" class="form-control nama-barang" name="nama_barang[]">
-                    <input type="hidden" class="form-control id_kategori" name="id_kategori[]">
                     <input type="hidden" class="form-control id_barang" name="id_barang[]">
                 </td>
                 <td><input type="number" class="form-control harga" name="harga[]" ></td>
                 <td><input type="number" class="form-control diskon" name="diskon[]" value="0" min="0" max="100"></td>
-                <td><input type="number" class="form-control subtotal1" name="subtotal1[]" readonly></td>
-                <td><input type="number" class="form-control qty" name="qty[]" value="1" min="1"></td>
-                <td><input type="number" class="form-control subtotal2" name="subtotal2[]" readonly></td>
+                <td><input type="number" class="form-control harga_disc" name="harga_disc[]" readonly></td>
                 <td><button class="btn btn-danger btn-sm hapusBaris">Hapus</button></td>
             </tr>
         `);
@@ -195,7 +197,7 @@
             row.find('.nama-barang').autocomplete({
                 source: function(request, response) {
                     $.ajax({
-                        url: '<?= $base_url ?>pages/pembelian/proses.php',
+                        url: '<?= $base_url ?>pages/promo/proses.php',
                         method: 'POST',
                         dataType: 'json',
                         data: {
@@ -236,41 +238,24 @@
                     }
 
                     const harga = parseFloat(barang.harga) || 0;
-                    const diskon = parseFloat(barang.diskon) || 0;
-                    const qty = parseFloat(parentRow.find('.qty').val()) || 1;
 
-                    parentRow.find('.id_kategori').val(barang.kategori);
                     parentRow.find('.id_barang').val(barang.ID_Barang);
                     parentRow.find('.harga').val(harga);
-                    parentRow.find('.subtotal1').val(harga);
-                    parentRow.find('.subtotal2').val(harga);
-
-                    updateTotal(); // Update total setelah pilih barang
+                    parentRow.find('.harga_disc').val(harga);
                 },
                 minLength: 1
             });
         });
 
-        // Realtime update diskon & qty
-        $('#tabel_detail').on('input', '.diskon, .qty', function() {
+      // Hitung ulang subtotal saat diskon atau qty berubah
+        $('#tabel_detail').on('input change', '.diskon, .qty', function() {
             const parentRow = $(this).closest('tr');
             const harga = parseFloat(parentRow.find('.harga').val()) || 0;
             const diskon = parseFloat(parentRow.find('.diskon').val()) || 0;
-            let qty = parseFloat(parentRow.find('.qty').val());
-
-            if (qty < 1 || isNaN(qty)) {
-                qty = 1;
-                parentRow.find('.qty').val(1);
-            }
-
-            const subtotal1 = harga - (harga * diskon / 100);
-            const subtotal2 = subtotal1 * qty;
-
-            parentRow.find('.subtotal1').val(subtotal1);
-            parentRow.find('.subtotal2').val(subtotal2);
-
-            updateTotal(); // Update total setelah edit qty/diskon
+            const harga_disc = harga - (harga * diskon / 100);
+            parentRow.find('.harga_disc').val(harga_disc);
         });
+
 
         // Hapus baris
         $('#tabel_detail').on('click', '.hapusBaris', function() {
@@ -288,34 +273,24 @@
         }
 
 
-        function updateTotal() {
-            let total = 0;
-            $('.subtotal2').each(function() {
-                const val = parseFloat($(this).val()) || 0;
-                total += val;
-            });
-            $('#Grandtotal').val(total);
-
-        }
         $('#btnSave').on('click', function(e) {
             e.preventDefault();
 
-            const ID_Supplier = parseInt($('#ID_Supplier').val()) || 0;
-            const ID_Karyawan = parseInt($('#ID_Karyawan').val()) || 0;
-            const Tanggal_Pembelian	 = $('#Tanggal_Pembelian	').val();
-            const Metode_Pembayaran = $('#Metode_Pembayaran').val();
-            const Grandtotal = parseFloat($('#Grandtotal').val()) || 0;
+            const Nama_Promo = $('#Nama_Promo').val();
+            const Tanggal_Awal = $('#Tanggal_Awal').val();
+            const Tanggal_Akhir = $('#Tanggal_Akhir').val();
 
-            if (ID_Supplier === 0) {
-                Swal.fire('Peringatan', 'Silakan pilih supplier.', 'warning');
+
+            if (Nama_Promo == '') {
+                Swal.fire('Peringatan', 'Silakan masukan nama promo.', 'warning');
                 return;
             }
-            if (ID_Karyawan === 0) {
-                Swal.fire('Peringatan', 'Silakan pilih karyawan.', 'warning');
+            if (Tanggal_Awal == '') {
+                Swal.fire('Peringatan', 'Silakan pilih tanggal awal promo.', 'warning');
                 return;
             }
-            if (!Metode_Pembayaran || Metode_Pembayaran == '') {
-                Swal.fire('Peringatan', 'Silakan pilih metode pembayaran.', 'warning');
+            if (Tanggal_Akhir == '') {
+                Swal.fire('Peringatan', 'Silakan pilih tanggal akhir promo.', 'warning');
                 return;
             }
 
@@ -323,18 +298,13 @@
 
             $('#tabel_detail tbody tr').each(function() {
                 const id_barang = $(this).find('.id_barang').val();
-                const id_kategori = $(this).find('.id_kategori').val();
                 const harga = parseFloat($(this).find('.harga').val()) || 0;
                 const diskon = parseFloat($(this).find('.diskon').val()) || 0;
-                const qty = parseInt($(this).find('.qty').val()) || 0;
-
                 if (id_barang) {
                     detail.push({
                         id_barang,
-                        id_kategori,
                         harga,
-                        diskon,
-                        qty
+                        diskon
                     });
                 }
             });
@@ -345,22 +315,20 @@
             }
 
             $.ajax({
-                url: '<?= $base_url ?>pages/pembelian/proses.php',
+                url: '<?= $base_url ?>pages/promo/proses.php',
                 method: 'POST',
                 data: {
-                    ID_Supplier,
-                    ID_Karyawan,
-                    Tanggal_Pembelian,
-                    Metode_Pembayaran,
-                    Grandtotal,
+                    Nama_Promo: Nama_Promo,
+                    Tanggal_Awal:Tanggal_Awal,
+                    Tanggal_Akhir: Tanggal_Akhir,
                     detail: JSON.stringify(detail),
                     action: 'tambah_data'
                 },
                 success: function(res) {
 
                     if (res === 'success') {
-                        Swal.fire('Berhasil', 'Data penjualan telah disimpan.', 'success').then(() => {
-                            window.location.href = '<?= $base_url ?>pages/pembelian/index.php';
+                        Swal.fire('Berhasil', 'Data promo telah disimpan.', 'success').then(() => {
+                            window.location.href = '<?= $base_url ?>pages/promo/index.php';
                         });
                     } else {
                         Swal.fire('Gagal', res, 'error');
@@ -372,7 +340,7 @@
             });
         });
         $('#btnCancel').on('click', function() {
-            window.location.href = '<?= $base_url ?>pages/pembelian/index.php';
+            window.location.href = '<?= $base_url ?>pages/promo/index.php';
         });
     </script>
 
