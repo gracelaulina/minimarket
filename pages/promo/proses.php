@@ -100,59 +100,52 @@ if (isset($_POST["action"])) {
         }
     }
     if ($action == "edit_data") {
-        $ID_Supplier        = mysqli_real_escape_string($mysqli, $_POST['ID_Supplier']);
-        $Tanggal_Pembelian  = mysqli_real_escape_string($mysqli, $_POST['Tanggal_Pembelian']);
-        $Metode_Pembayaran  = mysqli_real_escape_string($mysqli, $_POST['Metode_Pembayaran']);
-        $Grandtotal         = mysqli_real_escape_string($mysqli, $_POST['Grandtotal']);
-        $ID_Karyawan        = mysqli_real_escape_string($mysqli, $_POST['ID_Karyawan']);
+        $Nama_Promo    = mysqli_real_escape_string($mysqli, $_POST['Nama_Promo']);
+        $Tanggal_Awal  = mysqli_real_escape_string($mysqli, $_POST['Tanggal_Awal']);
+        $Tanggal_Akhir = mysqli_real_escape_string($mysqli, $_POST['Tanggal_Akhir']);
         $delete_id           = isset($_POST['delete_id']) ? $_POST['delete_id'] : '';
+        $ID_Promo_Musiman    = mysqli_real_escape_string($mysqli, $_POST['ID_Promo_Musiman']);
         $detail              = json_decode($_POST['detail'], true);
-        $ID_Promo_Musiman        = mysqli_real_escape_string($mysqli, $_POST['ID_Pembelian']);
 
 
-        // Update pembelian
-        $update_query = "UPDATE pembelian SET 
-                        ID_Supplier = ?, 
-                        ID_Karyawan = ?, 
-                        Tanggal_Pembelian = ?, 
-                        Metode_Pembayaran = ?, 
-                        Grandtotal = ?
-                    WHERE ID_Pembelian = ?";
+
+        // Update promo 
+        $update_query = "UPDATE promo_musiman SET 
+                        Nama_Promo = ?, 
+                        Tanggal_Awal = ?, 
+                        Tanggal_Akhir = ? 
+                    WHERE ID_Promo_Musiman = ?";
         $stmt = $mysqli->prepare($update_query);
-        $stmt->bind_param("iissdi", $ID_Supplier, $ID_Karyawan, $Tanggal_Pembelian, $Metode_Pembayaran, $Grandtotal, $ID_Promo_Musiman);
+        $stmt->bind_param("sssi", $Nama_Promo, $Tanggal_Awal, $Tanggal_Akhir, $ID_Promo_Musiman);
         $stmt->execute();
 
         // Hapus detail jika ada
         if (!empty($delete_id)) {
             $delete_id = preg_replace('/[^0-9,]/', '', $delete_id); // Amankan input
-            $mysqli->query("DELETE FROM detail_pembelian WHERE ID_Pembelian_Detail IN ($delete_id)");
+            $mysqli->query("DELETE FROM detail_promo_musiman WHERE ID_Detail_Promo_Musiman IN ($delete_id)");
         }
 
         // Simpan detail
         foreach ($detail as $item) {
-            $ID_Detail = isset($item['ID_Pembelian_Detail']) ? $item['ID_Pembelian_Detail'] : null;
+            $ID_Detail_Promo_Musiman = isset($item['ID_Detail_Promo_Musiman']) ? $item['ID_Detail_Promo_Musiman'] : null;
             $ID_Barang = $item['id_barang'];
-            $Kategori  = $item['id_kategori'];
             $Harga     = $item['harga'];
-            $Qty       = $item['qty'];
             $Diskon    = $item['diskon'];
 
-            if (!empty($ID_Detail)) {
+            if (!empty($ID_Detail_Promo_Musiman)) {
                 // Update detail
-                $stmt = $mysqli->prepare("UPDATE detail_pembelian SET 
+                $stmt = $mysqli->prepare("UPDATE detail_promo_musiman SET 
                                         ID_Barang = ?, 
-                                        ID_Kategori = ?, 
                                         Harga = ?, 
-                                        Qty = ?, 
                                         Diskon = ? 
-                                      WHERE ID_Pembelian_Detail = ?");
-                $stmt->bind_param("iidiii", $ID_Barang, $Kategori, $Harga, $Qty, $Diskon, $ID_Detail);
+                                      WHERE ID_Detail_Promo_Musiman = ?");
+                $stmt->bind_param("idii", $ID_Barang, $Harga, $Diskon, $ID_Detail_Promo_Musiman);
             } else {
                 // Insert detail baru
-                $stmt = $mysqli->prepare("INSERT INTO detail_pembelian 
-                                        (ID_Pembelian, ID_Barang, ID_Kategori, Harga, Qty, Diskon) 
-                                      VALUES (?, ?, ?, ?, ?, ?)");
-                $stmt->bind_param("iiidii", $ID_Promo_Musiman, $ID_Barang, $Kategori, $Harga, $Qty, $Diskon);
+                $stmt = $mysqli->prepare("INSERT INTO detail_promo_musiman 
+                                        (ID_Promo_Musiman, ID_Barang, Harga, Diskon) 
+                                      VALUES (?, ?, ?, ?)");
+                $stmt->bind_param("iidi", $ID_Promo_Musiman, $ID_Barang, $Harga,$Diskon);
             }
 
             $stmt->execute();
@@ -161,19 +154,19 @@ if (isset($_POST["action"])) {
         echo json_encode([
             'success' => true,
             'message' => 'Data berhasil diperbarui',
-            'ID_Pembelian' => $ID_Promo_Musiman
+            'ID_Promo_Musiman' => $ID_Promo_Musiman
         ]);
         exit;
     }
     if ($action == "hapus_data") {
-        $ID_Promo_Musiman = $_POST["ID_Pembelian"];
-        $query = mysqli_query($mysqli, "DELETE FROM detail_pembelian WHERE ID_Pembelian = $ID_Promo_Musiman");
-        $query2 = mysqli_query($mysqli, "DELETE FROM pembelian WHERE ID_Pembelian = $ID_Pembelian");
+        $ID_Promo = $_POST["ID_Promo"];
+        $query = mysqli_query($mysqli, "DELETE FROM detail_promo_musiman WHERE ID_Promo_Musiman = $ID_Promo");
+        $query2 = mysqli_query($mysqli, "DELETE FROM promo_musiman WHERE ID_Promo_Musiman = $ID_Promo");
 
         if ($query2) {
-            echo json_encode(['success' => 'Transaksi berhasil dihapus']);
+            echo json_encode(['success' => 'promo berhasil dihapus']);
         } else {
-            echo json_encode(['error' => 'Maaf, gagal hapus transaksi.']);
+            echo json_encode(['error' => 'Maaf, gagal hapus promo.']);
         }
         exit;
     }

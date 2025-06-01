@@ -197,10 +197,10 @@
         }
 
 
-        function hapus_data(ID_Pembelian) {
+        function hapus_data(ID_Promo) {
             Swal.fire({
                 title: 'Are you sure?',
-                text: "Apakah transaksi mau dihapus?",
+                text: "Apakah promo mau dihapus?",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
@@ -212,7 +212,7 @@
                         type: "POST",
                         url: "<?= $base_url ?>pages/promo/proses.php",
                         data: {
-                            ID_Pembelian: ID_Pembelian,
+                            ID_Promo: ID_Promo,
                             action: "hapus_data"
                         },
                         dataType: "json",
@@ -271,7 +271,7 @@
         }
 
         function editData(id) {
-            window.location.href = "<?= $base_url ?>pages/promo/edit.php?id_pembelian=" + id;
+            window.location.href = "<?= $base_url ?>pages/promo/edit.php?id_promo=" + id;
         }
     </script>
 
