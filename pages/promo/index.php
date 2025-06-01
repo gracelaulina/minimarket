@@ -104,10 +104,10 @@
                                                     echo "<td>" . $promo['Tanggal_Awal'] . "</td>";
                                                     echo "<td>" . $promo['Tanggal_Akhir'] . "</td>";
                                                     echo "<td>";
+                                                    echo "<button class='btn btn-xs btn-outline-primary btn-fw padding-button' onclick='details(" . $promo['ID_Promo_Musiman'] . ")'><i class='fa fa-eye'></i></button>";
                                                     if($promo['Status']=="Aktif"){
                                                     echo "<button class='btn btn-xs btn-outline-primary btn-fw padding-button' onclick='unpost(" . $promo['ID_Promo_Musiman'] . ")'>Non-Aktifkan</button>";
                                                     }else{
-                                                    echo "<button class='btn btn-xs btn-outline-primary btn-fw padding-button' onclick='details(" . $promo['ID_Promo_Musiman'] . ")'><i class='fa fa-eye'></i></button>";
                                                     echo "<button class='btn btn-xs btn-outline-primary btn-fw padding-button' onclick='editData(" . $promo['ID_Promo_Musiman'] . ")'><i class='fa fa-edit'></i> Edit</button>";
                                                     echo "<button class='btn btn-xs btn-outline-danger btn-fw padding-button' onclick='hapus_data(" . $promo['ID_Promo_Musiman'] . ")' ><i class='fa fa-edit'></i> Hapus</button>";
                                                     echo "<button class='btn btn-xs btn-outline-primary btn-fw padding-button' onclick='posting(" . $promo['ID_Promo_Musiman'] . ")'>Aktifkan</button>";
@@ -273,7 +273,107 @@
         function editData(id) {
             window.location.href = "<?= $base_url ?>pages/promo/edit.php?id_promo=" + id;
         }
+        function unpost(id_Promo) {
+        Swal.fire({
+        title: 'Are you sure?',
+        text: "Apakah promo mau di Non-Aktifkan?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Ya, Non-Aktifkan!'
+        }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+            type: "POST",
+            url: "<?= $base_url ?>pages/promo/proses.php",
+            data: {
+              id_Promo: id_Promo,
+              action: "unpost"
+            },
+            dataType: "json",
+            success: function(response) {
+              if (response.success) {
+                Swal.fire({
+                  icon: 'success',
+                  title: 'Berhasil',
+                  text: response.success,
+                  timer: 2000,
+                  showConfirmButton: false
+                }).then(() => {
+                  location.reload();
+                });
+              } else {
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Gagal',
+                  text: response.error || "Terjadi kesalahan.",
+                });
+              }
+            },
+            error: function() {
+              Swal.fire({
+                icon: 'error',
+                title: 'Gagal',
+                text: 'Maaf, barang ini tidak bisa di Non-Aktifkan.',
+              });
+            }
+          });
+        }
+      });
+    }
+
+    function posting(id_Promo) {
+      Swal.fire({
+        title: 'Are you sure?',
+        text: "Apakah promo mau diaktifkan?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Ya, Aktifkan!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+            type: "POST",
+            url: "<?= $base_url ?>pages/promo/proses.php",
+            data: {
+              id_Promo: id_Promo,
+              action: "posting"
+            },
+            dataType: "json",
+            success: function(response) {
+              if (response.success) {
+                Swal.fire({
+                  icon: 'success',
+                  title: 'Berhasil',
+                  text: response.success,
+                  timer: 2000,
+                  showConfirmButton: false
+                }).then(() => {
+                  location.reload();
+                });
+              } else {
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Gagal',
+                  text: response.error || "Terjadi kesalahan.",
+                });
+              }
+            },
+            error: function() {
+              Swal.fire({
+                icon: 'error',
+                title: 'Gagal',
+                text: 'Maaf, produk ini tidak bisa di Aktifkan.',
+              });
+            }
+          });
+        }
+      });
+    }
     </script>
+    
 
     <!-- DataTables JS -->
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>

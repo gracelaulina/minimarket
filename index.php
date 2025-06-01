@@ -1,3 +1,11 @@
+<?php
+session_start();
+if (!isset($_SESSION['ID_Karyawan'])) {
+  // Redirect ke halaman login kalau belum login
+  header("Location: login.php");
+  exit;
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 

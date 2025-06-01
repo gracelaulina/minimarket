@@ -170,4 +170,60 @@ if (isset($_POST["action"])) {
         }
         exit;
     }
+if ($action == "posting" && isset($_POST["id_Promo"])) {
+    $id_Promo = $_POST["id_Promo"];
+
+    $result = mysqli_query($mysqli, "SELECT ID_Barang, Diskon, ID_Detail_Promo_Musiman FROM detail_promo_musiman WHERE ID_Promo_Musiman = $id_Promo");
+
+    if ($result && mysqli_num_rows($result) > 0) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $idBarang = $row['ID_Barang'];
+            $diskon = $row['Diskon'];
+            $updateBarang = mysqli_query($mysqli, "UPDATE barang SET Diskon = $diskon WHERE ID_Barang = $idBarang");
+            if (!$updateBarang) {
+                echo json_encode(['error' => 'Gagal mengupdate diskon barang']);
+                exit;
+            }
+        }
+
+        $updatePromo = mysqli_query($mysqli, "UPDATE promo_musiman SET Status ='Aktif' WHERE ID_Promo_Musiman = $id_Promo");
+        if ($updatePromo) {
+            echo json_encode(['success' => 'Promo berhasil diaktifkan']);
+        } else {
+            echo json_encode(['error' => 'Gagal mengaktifkan promo']);
+        }
+    } else {
+        echo json_encode(['error' => 'Detail promo tidak ditemukan']);
+    }
+
+    exit;
+}
+if ($action == "unpost" && isset($_POST["id_Promo"])) {
+    $id_Promo = $_POST["id_Promo"];
+
+    $result = mysqli_query($mysqli, "SELECT ID_Barang, ID_Detail_Promo_Musiman FROM detail_promo_musiman WHERE ID_Promo_Musiman = $id_Promo");
+
+    if ($result && mysqli_num_rows($result) > 0) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $idBarang = $row['ID_Barang'];
+            $updateBarang = mysqli_query($mysqli, "UPDATE barang SET Diskon = 0 WHERE ID_Barang = $idBarang");
+            if (!$updateBarang) {
+                echo json_encode(['error' => 'Gagal menghapus diskon barang']);
+                exit;
+            }
+        }
+        $updatePromo = mysqli_query($mysqli, "UPDATE promo_musiman SET Status = 'Non-Aktif' WHERE ID_Promo_Musiman = $id_Promo");
+        if ($updatePromo) {
+            echo json_encode(['success' => 'Promo berhasil di-nonaktifkan']);
+        } else {
+            echo json_encode(['error' => 'Gagal menonaktifkan promo']);
+        }
+    } else {
+        echo json_encode(['error' => 'Detail promo tidak ditemukan']);
+    }
+
+    exit;
+}
+
+
 }
