@@ -74,7 +74,7 @@
             <div class="collapse" id="setting">
                 <ul class="nav flex-column sub-menu">
                     <li class="nav-item">
-                        <a class="nav-link" href="pages/ui-features/buttons.html">Promo</a>
+                        <a class="nav-link" href="<?= $base_url ?>pages/promo/index.php">Promo</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="<?= $base_url ?>pages/user/index.php">User</a>
