@@ -43,7 +43,36 @@ if (isset($_POST["action"])) {
         }
         exit;
     }
+ if ($action == "lihat_detail") {
+        if (isset($_POST['id'])) {
+            $id = $_POST['id'];
 
+            $stmt = mysqli_prepare($mysqli, "SELECT * 
+                                         FROM shift 
+                                         WHERE ID_Karyawan = ?");
+            mysqli_stmt_bind_param($stmt, "i", $id);
+            mysqli_stmt_execute($stmt);
+
+            $result = mysqli_stmt_get_result($stmt);
+
+            if (mysqli_num_rows($result) > 0) {
+                while ($row = mysqli_fetch_assoc($result)) {
+                    $Hari = $row['Hari'];
+                    $Jam_Masuk = $row['Jam_Masuk'];
+                    $Jam_Keluar = $row['Jam_Keluar'];
+                    echo "<tr>
+                        <td>{$Hari}</td>
+                        <td>{$Jam_Masuk}</td>
+                        <td>{$Jam_Keluar}</td>
+                      </tr>";
+                }
+            } else {
+                echo "<tr><td colspan='6' class='text-muted'>Tidak ada shift.</td></tr>";
+            }
+        } else {
+            echo "<tr><td colspan='6' class='text-danger'>ID tidak ditemukan.</td></tr>";
+        }
+    }
     if ($action == "hapus_data" && isset($_POST["ID_Karyawan"])) {
         $ID_Karyawan = $_POST["ID_Karyawan"];
         $query = mysqli_query($mysqli, "DELETE FROM shift WHERE ID_Karyawan = $ID_Karyawan");
