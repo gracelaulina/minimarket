@@ -338,7 +338,7 @@
 
             const ID_Supplier = parseInt($('#ID_Supplier').val()) || 0;
             const ID_Karyawan = parseInt($('#ID_Karyawan').val()) || 0;
-            const Tanggal_Pembelian	 = $('#Tanggal_Pembelian	').val();
+            const Tanggal_Pembelian = $('#Tanggal_Pembelian	').val();
             const Metode_Pembayaran = $('#Metode_Pembayaran').val();
             const Grandtotal = parseFloat($('#Grandtotal').val()) || 0;
 

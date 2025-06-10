@@ -206,9 +206,24 @@ if (isset($_POST["action"])) {
     }
 
     if ($action == "hapus_data") {
-        $id_penjualan = $_POST["id_penjualan"];
-        $query = mysqli_query($mysqli, "DELETE FROM detail_penjualan WHERE ID_Penjualan = $id_penjualan");
-        $query2 = mysqli_query($mysqli, "DELETE FROM penjualan WHERE ID_Penjualan = $id_penjualan");
+        $id_penjualan = mysqli_real_escape_string($mysqli, $_POST["id_penjualan"]);
+
+        // Ambil semua data detail_penjualan untuk transaksi ini
+        $result_detail = mysqli_query($mysqli, "SELECT ID_Barang, Qty FROM detail_penjualan WHERE ID_Penjualan = '$id_penjualan'");
+
+        while ($row = mysqli_fetch_assoc($result_detail)) {
+            $id_barang = $row['ID_Barang'];
+            $qty       = $row['Qty'];
+
+            // Kembalikan stok ke tabel barang
+            mysqli_query($mysqli, "UPDATE barang SET Stok = Stok + $qty WHERE ID_Barang = '$id_barang'");
+        }
+
+        // Hapus detail penjualan
+        $query = mysqli_query($mysqli, "DELETE FROM detail_penjualan WHERE ID_Penjualan = '$id_penjualan'");
+
+        // Hapus data penjualan utama
+        $query2 = mysqli_query($mysqli, "DELETE FROM penjualan WHERE ID_Penjualan = '$id_penjualan'");
 
         if ($query2) {
             echo json_encode(['success' => 'Transaksi berhasil dihapus']);
