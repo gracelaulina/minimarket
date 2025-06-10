@@ -64,6 +64,9 @@ if (isset($_POST["action"])) {
                 VALUES ('$id_penjualan', '$id_barang', '$id_kategori', '$harga', '$diskon', '$qty')";
                 $insert_detail = mysqli_query($mysqli, $query_detail);
 
+                $query_update_stok = "UPDATE barang SET Stok = (Stok - $qty) WHERE ID_Barang = '$id_barang'";
+                $update_stok = mysqli_query($mysqli, $query_update_stok);
+
                 if (!$insert_detail) {
                     throw new Exception("Gagal insert detail: " . mysqli_error($mysqli));
                 }
@@ -125,53 +128,73 @@ if (isset($_POST["action"])) {
         $delete_id           = isset($_POST['delete_id']) ? $_POST['delete_id'] : '';
         $detail              = json_decode($_POST['detail'], true);
 
-        // Update penjualan
+        // Update data utama penjualan
         $update_query = "UPDATE penjualan SET 
-                        ID_Karyawan = ?, 
-                        Tanggal = ?, 
-                        Metode_Pembayaran = ?, 
-                        Total = ?, 
-                        Diskon_Resi = ?, 
-                        Grandtotal = ?
-                    WHERE ID_Penjualan = ?";
-        $stmt = $mysqli->prepare($update_query);
-        $stmt->bind_param("issdddi", $ID_Karyawan, $Tanggal, $Metode_Pembayaran, $Total, $Diskon_Resi, $Grandtotal, $ID_Penjualan);
-        $stmt->execute();
+                        ID_Karyawan = '$ID_Karyawan', 
+                        Tanggal = '$Tanggal', 
+                        Metode_Pembayaran = '$Metode_Pembayaran', 
+                        Total = '$Total', 
+                        Diskon_Resi = '$Diskon_Resi', 
+                        Grandtotal = '$Grandtotal'
+                    WHERE ID_Penjualan = '$ID_Penjualan'";
+        mysqli_query($mysqli, $update_query);
 
-        // Hapus detail jika ada
+        // Hapus detail yang dihapus user
         if (!empty($delete_id)) {
-            $delete_id = preg_replace('/[^0-9,]/', '', $delete_id); // Amankan input
-            $mysqli->query("DELETE FROM detail_penjualan WHERE ID_Penjualan_Detail IN ($delete_id)");
+            $delete_id = preg_replace('/[^0-9,]/', '', $delete_id); // sanitize
+            $ids = explode(",", $delete_id);
+            foreach ($ids as $id) {
+                $id = mysqli_real_escape_string($mysqli, $id);
+
+                // Ambil data qty & ID_Barang sebelum hapus untuk kembalikan stok
+                $result = mysqli_query($mysqli, "SELECT Qty, ID_Barang FROM detail_penjualan WHERE ID_Penjualan_Detail = '$id'");
+                $row = mysqli_fetch_assoc($result);
+                if ($row) {
+                    $qty_kembali = $row['Qty'];
+                    $id_barang_kembali = $row['ID_Barang'];
+                    mysqli_query($mysqli, "UPDATE barang SET Stok = Stok + $qty_kembali WHERE ID_Barang = '$id_barang_kembali'");
+                }
+
+                // Hapus detailnya
+                mysqli_query($mysqli, "DELETE FROM detail_penjualan WHERE ID_Penjualan_Detail = '$id'");
+            }
         }
 
-        // Simpan detail
+        // Tambah / update detail
         foreach ($detail as $item) {
-            $ID_Detail = isset($item['ID_Penjualan_Detail']) ? $item['ID_Penjualan_Detail'] : null;
-            $ID_Barang = $item['id_barang'];
-            $Kategori  = $item['id_kategori'];
-            $Harga     = $item['harga'];
-            $Qty       = $item['qty'];
-            $Diskon    = $item['diskon'];
+            $ID_Detail  = isset($item['ID_Penjualan_Detail']) ? $item['ID_Penjualan_Detail'] : null;
+            $ID_Barang  = mysqli_real_escape_string($mysqli, $item['id_barang']);
+            $Kategori   = mysqli_real_escape_string($mysqli, $item['id_kategori']);
+            $Harga      = mysqli_real_escape_string($mysqli, $item['harga']);
+            $Qty        = mysqli_real_escape_string($mysqli, $item['qty']);
+            $Qty_Lama        = mysqli_real_escape_string($mysqli, $item['qty_draf']);
+            $Diskon     = mysqli_real_escape_string($mysqli, $item['diskon']);
 
             if (!empty($ID_Detail)) {
-                // Update detail
-                $stmt = $mysqli->prepare("UPDATE detail_penjualan SET 
-                                        ID_Barang = ?, 
-                                        ID_Kategori = ?, 
-                                        Harga = ?, 
-                                        Qty = ?, 
-                                        Diskon = ? 
-                                      WHERE ID_Penjualan_Detail = ?");
-                $stmt->bind_param("iidiii", $ID_Barang, $Kategori, $Harga, $Qty, $Diskon, $ID_Detail);
+                // 1. Kembalikan stok lama
+                $query_kembalikan_stok = "UPDATE barang SET Stok = Stok + $Qty_Lama WHERE ID_Barang = '$ID_Barang'";
+                mysqli_query($mysqli, $query_kembalikan_stok);
+
+                // 2. Update detail
+                $query_update_detail = "UPDATE detail_penjualan SET 
+                                        ID_Barang = '$ID_Barang', 
+                                        ID_Kategori = '$Kategori', 
+                                        Harga = '$Harga', 
+                                        Qty = '$Qty', 
+                                        Diskon = '$Diskon'
+                                    WHERE ID_Penjualan_Detail = '$ID_Detail'";
+                mysqli_query($mysqli, $query_update_detail);
             } else {
-                // Insert detail baru
-                $stmt = $mysqli->prepare("INSERT INTO detail_penjualan 
-                                        (ID_Penjualan, ID_Barang, ID_Kategori, Harga, Qty, Diskon) 
-                                      VALUES (?, ?, ?, ?, ?, ?)");
-                $stmt->bind_param("iiidii", $ID_Penjualan, $ID_Barang, $Kategori, $Harga, $Qty, $Diskon);
+                // 3. Insert detail baru
+                $query_insert_detail = "INSERT INTO detail_penjualan 
+                                    (ID_Penjualan, ID_Barang, ID_Kategori, Harga, Qty, Diskon) 
+                                    VALUES ('$ID_Penjualan', '$ID_Barang', '$Kategori', '$Harga', '$Qty', '$Diskon')";
+                mysqli_query($mysqli, $query_insert_detail);
             }
 
-            $stmt->execute();
+            // 4. Kurangi stok sekarang
+            $query_kurangi_stok = "UPDATE barang SET Stok = Stok - $Qty WHERE ID_Barang = '$ID_Barang'";
+            mysqli_query($mysqli, $query_kurangi_stok);
         }
 
         echo json_encode([
@@ -181,6 +204,7 @@ if (isset($_POST["action"])) {
         ]);
         exit;
     }
+
     if ($action == "hapus_data") {
         $id_penjualan = $_POST["id_penjualan"];
         $query = mysqli_query($mysqli, "DELETE FROM detail_penjualan WHERE ID_Penjualan = $id_penjualan");

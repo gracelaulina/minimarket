@@ -207,7 +207,9 @@
                                                         ?>
                                                         <input type="number" class="form-control subtotal1" name="subtotal1[]" value="<?= $subtotal1 ?>" readonly>
                                                     </td>
-                                                    <td><input type="number" class="form-control qty" name="qty[]" value="<?= $detail['Qty'] ?>" min="1"></td>
+                                                    <td><input type="number" class="form-control qty" name="qty[]" value="<?= $detail['Qty'] ?>" min="1">
+                                                        <input type="hidden" class="form-control qty_draf" name="qty_draf[]" value="<?= $detail['Qty'] ?>" min="1">
+                                                    </td>
                                                     <td><input type="number" class="form-control subtotal2" name="subtotal2[]" value="<?= $subtotal1 * $detail['Qty'] ?>" readonly></td>
                                                     <td><button class="btn btn-danger btn-sm" name="delete[]" onclick=" hapus_detail(<?= $detail['ID_Penjualan_Detail'] ?>)" type="button">Hapus</button></td>
                                                 </tr>
@@ -443,6 +445,8 @@
                 const harga = parseFloat($(this).find('.harga').val()) || 0;
                 const diskon = parseFloat($(this).find('.diskon').val()) || 0;
                 const qty = parseInt($(this).find('.qty').val()) || 0;
+                const qty_draf = parseInt($(this).find('.qty_draf').val()) || 0;
+
 
                 if (id_barang) {
                     detail.push({
@@ -451,7 +455,8 @@
                         id_kategori,
                         harga,
                         diskon,
-                        qty
+                        qty,
+                        qty_draf
                     });
                 }
             });
