@@ -68,8 +68,8 @@ if (isset($_POST["action"])) {
 
     if ($action == "hapus_data" && isset($_POST["ID_Karyawan"])) {
         $ID_Karyawan = $_POST["ID_Karyawan"];
-        $query = mysqli_query($mysqli, "DELETE FROM karyawan WHERE ID_Karyawan = $ID_Karyawan");
         $query_shift = mysqli_query($mysqli, "DELETE FROM shift WHERE ID_Karyawan = $ID_Karyawan");
+        $query = mysqli_query($mysqli, "DELETE FROM karyawan WHERE ID_Karyawan = $ID_Karyawan");
         if ($query) {
             echo json_encode(['success' => 'Data berhasil dihapus']);
         } else {
