@@ -84,8 +84,6 @@
                                                     echo "<td>" . $karyawan['Nama'] . "</td>";
                                                     echo "<td>";
                                                     echo "<button class='btn btn-xs btn-outline-primary btn-fw padding-button' onclick='details(" . $karyawan['ID_Karyawan'] . ")' ><i class='fa fa-eye'></i> Shift</button>";
-
-                                                    echo "<button class='btn btn-xs btn-outline-primary btn-fw padding-button' onclick='editData(" . $karyawan['ID_Karyawan'] . ")'><i class='fa fa-edit'></i> Edit</button>";
                                                     echo "</td>";
                                                 }
                                                 ?>
@@ -165,30 +163,30 @@
                      </div>
                  </div>
                  <div class="modal fade" id="detailModal" tabindex="-1" role="dialog" aria-labelledby="detailModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-lg" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title">Detail Shift</h5>
-                                <button type="button" class="close" data-dismiss="modal" onclick="closeModal()" aria-label="Tutup">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <table class="table table-bordered">
-                                    <thead>
-                                        <tr>
-                                            <th>Hari</th>
-                                            <th>Jam Masuk</th>
-                                            <th>Jam Keluar</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="detailTableBody">
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                     <div class="modal-dialog modal-lg" role="document">
+                         <div class="modal-content">
+                             <div class="modal-header">
+                                 <h5 class="modal-title">Detail Shift</h5>
+                                 <button type="button" class="close" data-dismiss="modal" onclick="closeModal()" aria-label="Tutup">
+                                     <span aria-hidden="true">&times;</span>
+                                 </button>
+                             </div>
+                             <div class="modal-body">
+                                 <table class="table table-bordered">
+                                     <thead>
+                                         <tr>
+                                             <th>Hari</th>
+                                             <th>Jam Masuk</th>
+                                             <th>Jam Keluar</th>
+                                         </tr>
+                                     </thead>
+                                     <tbody id="detailTableBody">
+                                     </tbody>
+                                 </table>
+                             </div>
+                         </div>
+                     </div>
+                 </div>
 
 
                  <!-- content-wrapper ends -->
@@ -236,25 +234,25 @@
              $("#exampleModalScrollable").modal('show');
          }
 
-            function details(id_karyawan) {
-            $('#detailModal').modal('show');
-            $('#detailTableBody').html('');
+         function details(id_karyawan) {
+             $('#detailModal').modal('show');
+             $('#detailTableBody').html('');
 
-            $.ajax({
-                url: '<?= $base_url ?>pages/shift/proses.php',
-                type: 'POST',
-                data: {
-                    id: id_karyawan,
-                    action: 'lihat_detail'
-                },
-                success: function(response) {
-                    $('#detailTableBody').append(response);
-                },
-                error: function() {
-                    $('#detailTableBody').append('<tr><td colspan="6" class="text-danger">Gagal mengambil data.</td></tr>');
-                }
-            });
-        }
+             $.ajax({
+                 url: '<?= $base_url ?>pages/shift/proses.php',
+                 type: 'POST',
+                 data: {
+                     id: id_karyawan,
+                     action: 'lihat_detail'
+                 },
+                 success: function(response) {
+                     $('#detailTableBody').append(response);
+                 },
+                 error: function() {
+                     $('#detailTableBody').append('<tr><td colspan="6" class="text-danger">Gagal mengambil data.</td></tr>');
+                 }
+             });
+         }
 
 
          function editData(ID_Karyawan) {
