@@ -38,7 +38,7 @@ if (isset($_POST["action"])) {
             $mysqli->begin_transaction();
             $query_pembelian = "INSERT INTO promo_musiman 
             (Nama_Promo, Tanggal_Awal, Tanggal_Akhir, Status) 
-            VALUES ('$Nama_Promo','$Tanggal_Awal', '$Tanggal_Akhir', 'Aktif')";
+            VALUES ('$Nama_Promo','$Tanggal_Awal', '$Tanggal_Akhir', 'Non-Aktif')";
             $insert_promo = mysqli_query($mysqli, $query_pembelian);
 
             if (!$insert_promo) {
